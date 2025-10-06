@@ -1,2 +1,0 @@
-### GET OFFICERS
-GET http://localhost:8383/officers

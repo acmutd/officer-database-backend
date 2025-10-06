@@ -17,4 +17,18 @@ app.get('/officers', async (req, res) => {
     }
 })
 
+app.get('/officers/:id', async (req, res) => {
+    const { id } = req.params
+    try {
+        const officer = await functions.getOfficerById(id)
+        if (!officer) {
+            return res.status(404).send({ error: 'Officer not found' })
+        }
+        res.status(200).json(officer)
+    } catch (err) {
+        console.error(err)
+        res.status(500).send({ error: 'Failed to get officer' })
+    }
+})
+
 app.listen(port, () => console.log(`Server has started on port: ${port}`))

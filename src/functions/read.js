@@ -14,6 +14,13 @@ async function listOfficers() {
   return officers
 }
 
+async function getOfficerById(id) {
+  const officerRef = db.collection(COLLECTION).doc(id)
+  const doc = await officerRef.get()
+  if (!doc.exists) return null
+  return { id: doc.id, ...doc.data() }
+}
+
 module.exports = {
-  listOfficers,
+  listOfficers, getOfficerById
 }

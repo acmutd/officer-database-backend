@@ -26,6 +26,15 @@ $ npm install # Or yarn install
 $ npm run dev
 ```
 
-2. Install the [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) VS Code extension
-3. Open the `/tests` folder and select a CRUD test file (I separate them)
-4. Above each operation should be a button that says "Send Request". Click it and it should work!
+#### 4. Testing
+> [!TIP]
+> This isn't needed to run the repository, but it's always good to run tests to make sure everything is working
+
+1. Install the [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) VS Code extension
+2. Create a new file called `test.rest`
+3. Paste this into the file:
+```
+### GET OFFICERS
+GET http://localhost:8383/officers
+```
+Any tests written in the file should be formatted like that, with a title above each test. The extension will recognize the formatting and insert a "Send Request" button below the title, clicking it will run the test!
