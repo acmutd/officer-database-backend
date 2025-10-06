@@ -31,4 +31,15 @@ app.get('/officers/:id', async (req, res) => {
     }
 })
 
+app.post('/officers/create/', async (req, res) => {
+    const data = req.body
+    try {
+        const newOfficer = await functions.createOfficer(data)
+        res.status(201).json(newOfficer)
+    } catch (err) {
+        console.error(err)
+        res.status(500).send({ error: 'Failed to create officer' })
+    }
+})
+
 app.listen(port, () => console.log(`Server has started on port: ${port}`))
