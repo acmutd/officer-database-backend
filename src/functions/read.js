@@ -1,4 +1,4 @@
-const { db } = require('./firebase.js')
+const { db } = require('../firebase.js')
 
 const COLLECTION = 'officer'
 
