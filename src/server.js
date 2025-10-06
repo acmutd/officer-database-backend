@@ -38,6 +38,9 @@ app.post('/officers/create/', async (req, res) => {
         res.status(201).json(newOfficer)
     } catch (err) {
         console.error(err)
+        if (err && err.status === 400) {
+            return res.status(400).send({ error: err.message })
+        }
         res.status(500).send({ error: 'Failed to create officer' })
     }
 })
