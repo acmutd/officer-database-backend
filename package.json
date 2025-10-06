@@ -1,0 +1,28 @@
+{
+  "name": "officer-database-backend",
+  "version": "1.0.0",
+  "description": "This repository contains the CRUD operations for the ACM UTD officer database",
+  "homepage": "https://github.com/acmutd/officer-database-backend#readme",
+  "bugs": {
+    "url": "https://github.com/acmutd/officer-database-backend/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/acmutd/officer-database-backend.git"
+  },
+  "license": "ISC",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "firebase-admin": "^13.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}

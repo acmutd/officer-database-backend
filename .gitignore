@@ -1,0 +1,4 @@
+node_modules/*
+firebase-creds.json
+test.rest
+.env
