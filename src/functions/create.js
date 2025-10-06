@@ -1,5 +1,5 @@
 const { db } = require('../firebase.js')
-const { Timestamp } = require('firebase-admin/firestore')
+const { convertRoleDates, validateOfficerData } = require('./helpers/validators.js')
 
 const COLLECTION = 'officer'
 
@@ -20,120 +20,6 @@ async function createOfficer(data) {
 
   await docRef.set(dataWithUID)
   return dataWithUID
-}
-
-// This will verify that the data being passed into the createOfficer function is valid for the Firebase schema
-function validateOfficerData(data) {
-  if (!data || typeof data !== 'object') {
-    const err = new Error('Request body must be a JSON object')
-    err.status = 400
-    throw err
-  }
-
-  const requiredTop = ['accessLevel', 'expectedGrad', 'firstName', 'isActive', 'lastName', 'netId', 'roles', 'standing']
-  for (const key of requiredTop) {
-    if (!(key in data)) {
-      const err = new Error(`Missing required field: ${key}`)
-      err.status = 400
-      throw err
-    }
-  }
-
-  // expectedGrad must be an object with term (string) and year (number)
-  const eg = data.expectedGrad
-  if (!eg || typeof eg !== 'object' || typeof eg.term !== 'string' || typeof eg.year !== 'number') {
-    const err = new Error('expectedGrad must be an object with { term: string, year: number }')
-    err.status = 400
-    throw err
-  }
-
-  // roles must be a non-empty array with required fields
-  if (!Array.isArray(data.roles) || data.roles.length === 0) {
-    const err = new Error('roles must be a non-empty array')
-    err.status = 400
-    throw err
-  }
-  for (const [i, role] of data.roles.entries()) {
-    if (!role || typeof role !== 'object') {
-      const err = new Error(`roles[${i}] must be an object`)
-      err.status = 400
-      throw err
-    }
-    const roleRequired = ['division', 'endDate', 'level', 'startDate', 'title']
-    for (const rkey of roleRequired) {
-      if (!(rkey in role)) {
-        const err = new Error(`roles[${i}] is missing required field: ${rkey}`)
-        err.status = 400
-        throw err
-      }
-    }
-    // level should be a number
-    if (typeof role.level !== 'number') {
-      const err = new Error(`roles[${i}].level must be a number`)
-      err.status = 400
-      throw err
-    }
-  }
-
-  // socialLinks is optional; if provided, it must be an object and its fields (if present) must be strings
-  if ('socialLinks' in data) {
-    const sl = data.socialLinks
-    if (!sl || typeof sl !== 'object') {
-      const err = new Error('socialLinks must be an object when provided')
-      err.status = 400
-      throw err
-    }
-    const slFields = ['github', 'linkedin', 'personalEmail']
-    for (const f of slFields) {
-      if (f in sl && typeof sl[f] !== 'string') {
-        const err = new Error(`socialLinks.${f} must be a string when provided`)
-        err.status = 400
-        throw err
-      }
-    }
-  }
-}
-
-// This function will convert the startDate and endDate fields in each role from ISO timestamps to Firestore Timestamps
-function convertRoleDates(roles) {
-  if (!Array.isArray(roles)) return roles
-  return roles.map((role, i) => {
-    const r = { ...role }
-
-    const toTimestamp = (val, fieldName) => {
-      if (val === null) return null
-      // already a Firestore Timestamp
-      if (val && typeof val === 'object' && typeof val.toDate === 'function' && typeof val.seconds === 'number') return val
-      if (val instanceof Date) {
-        if (isNaN(val.getTime())) {
-          const err = new Error(`roles[${i}].${fieldName} is not a valid Date`)
-          err.status = 400
-          throw err
-        }
-        return Timestamp.fromDate(val)
-      }
-      if (typeof val === 'number') {
-        return Timestamp.fromMillis(val)
-      }
-      if (typeof val === 'string') {
-        const parsed = new Date(val)
-        if (isNaN(parsed.getTime())) {
-          const err = new Error(`roles[${i}].${fieldName} is not a valid date string`)
-          err.status = 400
-          throw err
-        }
-        return Timestamp.fromDate(parsed)
-      }
-      const err = new Error(`roles[${i}].${fieldName} must be null, a valid date string, number (ms), Date, or Firestore Timestamp`)
-      err.status = 400
-      throw err
-    }
-
-    if ('startDate' in r) r.startDate = toTimestamp(r.startDate, 'startDate')
-    if ('endDate' in r) r.endDate = r.endDate === null ? null : toTimestamp(r.endDate, 'endDate')
-
-    return r
-  })
 }
 
 module.exports = {

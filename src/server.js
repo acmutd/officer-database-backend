@@ -45,6 +45,24 @@ app.post('/officers/create/', async (req, res) => {
     }
 })
 
+app.patch('/officers/update/:id', async (req, res) => {
+    const { id } = req.params
+    const patch = req.body
+    try {
+        const updated = await functions.updateOfficer(id, patch)
+        res.status(200).json(updated)
+    } catch (err) {
+        console.error(err)
+        if (err && err.status === 400) {
+            return res.status(400).send({ error: err.message })
+        }
+        if (err && err.status === 404) {
+            return res.status(404).send({ error: err.message })
+        }
+        res.status(500).send({ error: 'Failed to update officer' })
+    }
+})
+
 app.delete('/officers/delete/:id', async (req, res) => {
     const { id } = req.params
     try {
