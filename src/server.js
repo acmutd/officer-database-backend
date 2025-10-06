@@ -45,4 +45,18 @@ app.post('/officers/create/', async (req, res) => {
     }
 })
 
+app.delete('/officers/delete/:id', async (req, res) => {
+    const { id } = req.params
+    try {
+        const deletedOfficer = await functions.deleteOfficer(id)
+        if (!deletedOfficer) {
+            return res.status(404).send({ error: 'Officer not found' })
+        }
+        res.status(200).json(deletedOfficer)
+    } catch (err) {
+        console.error(err)
+        res.status(500).send({ error: 'Failed to delete officer' })
+    }
+})
+
 app.listen(port, () => console.log(`Server has started on port: ${port}`))
