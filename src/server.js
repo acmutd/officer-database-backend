@@ -7,6 +7,7 @@ const functions = require('./functions')
 
 app.use(express.json())
 
+// List all officers
 app.get('/officers', async (req, res) => {
     try {
         const officers = await functions.listOfficers()
@@ -17,6 +18,7 @@ app.get('/officers', async (req, res) => {
     }
 })
 
+// Get officer by ID
 app.get('/officers/:id', async (req, res) => {
     const { id } = req.params
     try {
@@ -31,7 +33,8 @@ app.get('/officers/:id', async (req, res) => {
     }
 })
 
-app.post('/officers/create/', async (req, res) => {
+// Create a new officer
+app.post('/officers/', async (req, res) => {
     const data = req.body
     try {
         const newOfficer = await functions.createOfficer(data)
@@ -45,7 +48,8 @@ app.post('/officers/create/', async (req, res) => {
     }
 })
 
-app.patch('/officers/update/:id', async (req, res) => {
+// Update an existing officer
+app.patch('/officers/:id', async (req, res) => {
     const { id } = req.params
     const patch = req.body
     try {
@@ -63,7 +67,8 @@ app.patch('/officers/update/:id', async (req, res) => {
     }
 })
 
-app.delete('/officers/delete/:id', async (req, res) => {
+// Delete an officer by ID
+app.delete('/officers/:id', async (req, res) => {
     const { id } = req.params
     try {
         const deletedOfficer = await functions.deleteOfficer(id)
