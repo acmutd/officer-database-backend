@@ -1,6 +1,5 @@
 import { db } from '../firebase'
-import { validateOfficerPatch, convertOfficerDates } from './helpers/validators'
-import { formatOfficerDates } from '../schemas/format'
+import { validateOfficerPatch } from './helpers/validators'
 
 const COLLECTION = 'officer'
 
@@ -12,7 +11,7 @@ export async function updateOfficer(id: string, patch: any) {
   }
 
   const parsed = validateOfficerPatch(patch)
-  const updates = convertOfficerDates({ ...parsed })
+  const updates = { ...parsed }
 
   const docRef = db.collection(COLLECTION).doc(id)
   await docRef.set(updates, { merge: true })
@@ -23,5 +22,5 @@ export async function updateOfficer(id: string, patch: any) {
     err.status = 404
     throw err
   }
-  return formatOfficerDates({ id: updated.id, ...updated.data() })
+  return { id: updated.id, ...updated.data() }
 }

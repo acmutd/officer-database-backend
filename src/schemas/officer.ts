@@ -1,18 +1,17 @@
 import { z } from 'zod'
 
-export const FirestoreTimestamp = z.object({
-  _seconds: z.number(),
-  _nanoseconds: z.number(),
+export const TermEnum = z.enum(['Fall', 'Spring'])
+
+export const SimpleDate = z.object({
+  term: TermEnum,
+  year: z.number().int(),
 })
 
-export const IsoDateString = z.string().refine((s) => !isNaN(Date.parse(s)), { message: 'Invalid ISO date string' })
-export const RoleDate = z.union([FirestoreTimestamp, IsoDateString])
-
 export const RoleSchema = z.object({
-  startDate: RoleDate,
+  startDate: SimpleDate,
   level: z.number(),
   title: z.string(),
-  endDate: RoleDate.nullable(),
+  endDate: SimpleDate.nullable(),
   division: z.string(),
 })
 
@@ -22,22 +21,15 @@ export const SocialLinksSchema = z.object({
   personalEmail: z.string().optional(),
 }).optional()
 
-export const ExpectedGradSchema = z.object({
-  term: z.string(),
-  year: z.number(),
-})
-
 export const OfficerSchema = z.object({
-  id: z.string().optional(),
   accessLevel: z.number(),
-  expectedGrad: ExpectedGradSchema,
-  term: z.string().optional(),
-  year: z.number().optional(),
+  expectedGrad: SimpleDate,
+  year: z.number().int().optional(),
   firstName: z.string(),
   lastName: z.string(),
   netId: z.string(),
   isActive: z.boolean(),
-  joinDate: RoleDate,
+  joinDate: SimpleDate,
   UID: z.string().optional(),
   socialLinks: SocialLinksSchema,
   standing: z.string(),
