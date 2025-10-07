@@ -1,6 +1,6 @@
-const { Timestamp } = require('firebase-admin/firestore')
+import { Timestamp } from 'firebase-admin/firestore'
 
-function toIsoFromFirestoreTimestamp(val) {
+export function toIsoFromFirestoreTimestamp(val: any): any {
   if (val === null || val === undefined) return val
   if (val instanceof Timestamp) return val.toDate().toISOString()
   if (val && typeof val === 'object' && typeof val._seconds === 'number') {
@@ -16,12 +16,12 @@ function toIsoFromFirestoreTimestamp(val) {
   return val
 }
 
-function formatOfficerDates(officer) {
+export function formatOfficerDates(officer: any): any {
   if (!officer || typeof officer !== 'object') return officer
-  const out = { ...officer }
+  const out: any = { ...officer }
   if ('joinDate' in out) out.joinDate = toIsoFromFirestoreTimestamp(out.joinDate)
   if (Array.isArray(out.roles)) {
-    out.roles = out.roles.map((r) => ({
+    out.roles = out.roles.map((r: any) => ({
       ...r,
       startDate: toIsoFromFirestoreTimestamp(r.startDate),
       endDate: r.endDate === null ? null : toIsoFromFirestoreTimestamp(r.endDate),
@@ -29,5 +29,3 @@ function formatOfficerDates(officer) {
   }
   return out
 }
-
-module.exports = { toIsoFromFirestoreTimestamp, formatOfficerDates }

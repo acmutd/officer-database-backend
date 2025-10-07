@@ -1,14 +1,14 @@
-const { z } = require('zod')
+import { z } from 'zod'
 
-const FirestoreTimestamp = z.object({
+export const FirestoreTimestamp = z.object({
   _seconds: z.number(),
   _nanoseconds: z.number(),
 })
 
-const IsoDateString = z.string().refine((s) => !isNaN(Date.parse(s)), { message: 'Invalid ISO date string' })
-const RoleDate = z.union([FirestoreTimestamp, IsoDateString])
+export const IsoDateString = z.string().refine((s) => !isNaN(Date.parse(s)), { message: 'Invalid ISO date string' })
+export const RoleDate = z.union([FirestoreTimestamp, IsoDateString])
 
-const RoleSchema = z.object({
+export const RoleSchema = z.object({
   startDate: RoleDate,
   level: z.number(),
   title: z.string(),
@@ -16,18 +16,18 @@ const RoleSchema = z.object({
   division: z.string(),
 })
 
-const SocialLinksSchema = z.object({
+export const SocialLinksSchema = z.object({
   github: z.string().optional(),
   linkedin: z.string().optional(),
   personalEmail: z.string().optional(),
 }).optional()
 
-const ExpectedGradSchema = z.object({
+export const ExpectedGradSchema = z.object({
   term: z.string(),
   year: z.number(),
 })
 
-const OfficerSchema = z.object({
+export const OfficerSchema = z.object({
   id: z.string().optional(),
   accessLevel: z.number(),
   expectedGrad: ExpectedGradSchema,
@@ -44,4 +44,4 @@ const OfficerSchema = z.object({
   roles: z.array(RoleSchema),
 })
 
-module.exports = { OfficerSchema }
+export type Officer = z.infer<typeof OfficerSchema>
