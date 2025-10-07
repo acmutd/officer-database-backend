@@ -19,75 +19,85 @@ There is one function for deleting information in the database
 There is function for updating information in the database
 - `PUT /officer/{id}`
 This function is unique in the way that it doesn't require a fixed data entry like all other functions
+
 The only fields you need to include in the payload are the fields you need to update. For example, if my profile is currently this:
-```
-GET /officer/74NmI3q8UfclXQKMbZmp
-```
+
 ```json
+// GET /officer/74NmI3q8UfclXQKMbZmp
 {
-  "id": "74NmI3q8UfclXQKMbZmp",
   "UID": "74NmI3q8UfclXQKMbZmp",
   "firstName": "Jeydin",
-  "isActive": true,
   "lastName": "Pham",
   "netId": "DAL489430",
+  "isActive": true,
+  "standing": "Freshman",
+  "accessLevel": 2,
+  "joinDate": {
+    "term": "Fall",
+    "year": 2025
+  },
+  "expectedGrad": {
+    "term": "Spring",
+    "year": 2029
+  },
+  "roles": [
+    {
+      "title": "ACM Core Officer",
+      "division": "Development",
+      "level": 1,
+      "startDate": {
+        "term": "Fall",
+        "year": 2025,
+      },
+      "endDate": null,
+    }
+  ],
   "socialLinks": {
     "github": "https://github.com/jeydinpham",
     "linkedin": "https://www.linkedin.com/in/jeydinpham/",
     "personalEmail": "jeydinpham@gmail.com"
   },
-  "standing": "Freshman",
-  "accessLevel": 2,
-  "roles": [
-    {
-      "division": "Development",
-      "endDate": null,
-      "level": 1,
-      "startDate": {
-        "_seconds": 1754006400,
-        "_nanoseconds": 0
-      },
-      "title": "ACM Core Officer"
-    }
-  ],
-  "expectedGrad": {
-    "term": "Spring",
-    "year": 2029
-  }
 }
 ```
 and I wanted to edit my first name, my lastname, and my standing, all I would include in the payload is:
-```
-PUT /officer/74NmI3q8UfclXQKMbZmp
-```
 ```json
+// PUT /officer/74NmI3q8UfclXQKMbZmp
 {
   "firstName": "Bobby",
-  "lastName": "Balls"
+  "lastName": "Balls",
   "accessLevel": 2,
 }
 ```
 
 The **ONLY ONLY ONLY** exception to this rule is the roles and the expected graduation date, **those need all objects to be updated with it**
+
 If you wanted to edit the role information in the data above, you would send the entire roles array like this:
-```
-PUT /officer/74NmI3q8UfclXQKMbZmp
-```
+
 ```json
+// PUT /officer/74NmI3q8UfclXQKMbZmp
 {
   "roles": [
+    // Here, we're adding a new officer role to my roles array, which means that I would be an officer of two divisions at once, since both endDates are null
     {
-      "division": "Education",
-      "endDate": null,
+      "title": "ACM Events Officer",
+      "division": "Community",
       "level": 1,
-      "startDate": "2025-08-01T00:00:00Z",
-      "title": "ACM Education Officer"
+      "startDate": {
+        "term": "Spring",
+        "year": 2026
+      },
+      "endDate": null, // If endDate is null, the officer is still working in that role
+    },
+    {
+      "title": "ACM Core Officer",
+      "division": "Development",
+      "level": 1,
+      "startDate": {
+        "term": "Fall",
+        "year": 2025,
+      },
+      "endDate": null,
     }
   ]
 }
-```
-
-And now the data is wrong so it's time to delete myself!
-```
-DELETE /officer/74NmI3q8UfclXQKMbZmp
 ```
