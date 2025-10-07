@@ -7,7 +7,8 @@ async function deleteOfficer(id) {
   const doc = await officerRef.get()
   if (!doc.exists) return null
   await officerRef.delete()
-  return { id: doc.id, ...doc.data() }
+  const { formatOfficerDates } = require('../schemas/format')
+  return formatOfficerDates({ id: doc.id, ...doc.data() })
 }
 
 module.exports = {

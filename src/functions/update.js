@@ -1,7 +1,7 @@
 (async () => { })()
 
 const { db } = require('../firebase.js')
-const { validateOfficerPatch, convertRoleDates } = require('./helpers/validators.js')
+const { validateOfficerPatch } = require('./helpers/validators.js')
 
 const COLLECTION = 'officer'
 
@@ -12,11 +12,11 @@ async function updateOfficer(id, patch) {
     throw err
   }
 
-  validateOfficerPatch(patch)
+  const parsed = validateOfficerPatch(patch)
 
-  // convert joinDate and roles if present in patch
+  // convert joinDate and roles if present in parsed patch
   const { convertOfficerDates } = require('./helpers/validators.js')
-  const updates = convertOfficerDates({ ...patch })
+  const updates = convertOfficerDates({ ...parsed })
 
   const docRef = db.collection(COLLECTION).doc(id)
   await docRef.set(updates, { merge: true })
@@ -27,7 +27,8 @@ async function updateOfficer(id, patch) {
     err.status = 404
     throw err
   }
-  return { id: updated.id, ...updated.data() }
+  const { formatOfficerDates } = require('../schemas/format')
+  return formatOfficerDates({ id: updated.id, ...updated.data() })
 }
 
 module.exports = {

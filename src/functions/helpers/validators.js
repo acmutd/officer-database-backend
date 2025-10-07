@@ -1,179 +1,29 @@
 const { Timestamp } = require('firebase-admin/firestore')
 
-function assertObject(val, name) {
-  if (!val || typeof val !== 'object' || Array.isArray(val)) {
-    const err = new Error(`${name} must be an object`)
-    err.status = 400
-    throw err
-  }
-}
+const { OfficerSchema } = require('../../schemas/officer')
 
 function validateOfficerData(data) {
-  assertObject(data, 'Request body')
-
-  const requiredTop = ['accessLevel', 'expectedGrad', 'firstName', 'isActive', 'lastName', 'netId', 'roles', 'standing']
-  for (const key of requiredTop) {
-    if (!(key in data)) {
-      const err = new Error(`Missing required field: ${key}`)
-      err.status = 400
-      throw err
-    }
-  }
-
-  const eg = data.expectedGrad
-  if (!eg || typeof eg !== 'object' || typeof eg.term !== 'string' || typeof eg.year !== 'number') {
-    const err = new Error('expectedGrad must be an object with { term: string, year: number }')
+  const parsed = OfficerSchema.safeParse(data)
+  if (!parsed.success) {
+    const err = new Error('Validation failed')
     err.status = 400
+    err.errors = parsed.error.flatten()
     throw err
   }
-
-  if (!Array.isArray(data.roles) || data.roles.length === 0) {
-    const err = new Error('roles must be a non-empty array')
-    err.status = 400
-    throw err
-  }
-  for (const [i, role] of data.roles.entries()) {
-    if (!role || typeof role !== 'object') {
-      const err = new Error(`roles[${i}] must be an object`)
-      err.status = 400
-      throw err
-    }
-    const roleRequired = ['division', 'endDate', 'level', 'startDate', 'title']
-    for (const rkey of roleRequired) {
-      if (!(rkey in role)) {
-        const err = new Error(`roles[${i}] is missing required field: ${rkey}`)
-        err.status = 400
-        throw err
-      }
-    }
-    if (typeof role.level !== 'number') {
-      const err = new Error(`roles[${i}].level must be a number`)
-      err.status = 400
-      throw err
-    }
-  }
-
-  if ('socialLinks' in data) {
-    const sl = data.socialLinks
-    if (!sl || typeof sl !== 'object') {
-      const err = new Error('socialLinks must be an object when provided')
-      err.status = 400
-      throw err
-    }
-    const slFields = ['github', 'linkedin', 'personalEmail']
-    for (const f of slFields) {
-      if (f in sl && typeof sl[f] !== 'string') {
-        const err = new Error(`socialLinks.${f} must be a string when provided`)
-        err.status = 400
-        throw err
-      }
-    }
-  }
+  return parsed.data
 }
 
 function validateOfficerPatch(data) {
-  if (!data || typeof data !== 'object') {
-    const err = new Error('Request body must be a JSON object')
+  const PatchSchema = OfficerSchema.partial()
+  // For patches, keep requiredness flexible but still validate types/shape
+  const parsed = PatchSchema.safeParse(data)
+  if (!parsed.success) {
+    const err = new Error('Validation failed')
     err.status = 400
+    err.errors = parsed.error.flatten()
     throw err
   }
-
-  // validate known fields if present
-  if ('accessLevel' in data && typeof data.accessLevel !== 'number') {
-    const err = new Error('accessLevel must be a number')
-    err.status = 400
-    throw err
-  }
-  if ('expectedGrad' in data) {
-    const eg = data.expectedGrad
-    if (!eg || typeof eg !== 'object') {
-      const err = new Error('expectedGrad must be an object when provided')
-      err.status = 400
-      throw err
-    }
-    const hasTerm = 'term' in eg
-    const hasYear = 'year' in eg
-    // For patches, require both year and term when updating expectedGrad
-    if (!hasYear || !hasTerm) {
-      const err = new Error('expectedGrad patch must include both year and term')
-      err.status = 400
-      throw err
-    }
-    if (hasTerm && typeof eg.term !== 'string') {
-      const err = new Error('expectedGrad.term must be a string')
-      err.status = 400
-      throw err
-    }
-    if (hasYear && typeof eg.year !== 'number') {
-      const err = new Error('expectedGrad.year must be a number')
-      err.status = 400
-      throw err
-    }
-  }
-  if ('firstName' in data && typeof data.firstName !== 'string') {
-    const err = new Error('firstName must be a string')
-    err.status = 400
-    throw err
-  }
-  if ('isActive' in data && typeof data.isActive !== 'boolean') {
-    const err = new Error('isActive must be a boolean')
-    err.status = 400
-    throw err
-  }
-  if ('lastName' in data && typeof data.lastName !== 'string') {
-    const err = new Error('lastName must be a string')
-    err.status = 400
-    throw err
-  }
-  if ('netId' in data && typeof data.netId !== 'string') {
-    const err = new Error('netId must be a string')
-    err.status = 400
-    throw err
-  }
-  if ('roles' in data) {
-    // When roles are provided in a patch, require the full roles array to be submitted
-    if (!Array.isArray(data.roles) || data.roles.length === 0) {
-      const err = new Error('roles must be a non-empty array when provided')
-      err.status = 400
-      throw err
-    }
-    const roleRequired = ['division', 'endDate', 'level', 'startDate', 'title']
-    for (const [i, role] of data.roles.entries()) {
-      if (typeof role !== 'object' || role === null) {
-        const err = new Error(`roles[${i}] must be an object`)
-        err.status = 400
-        throw err
-      }
-      for (const rkey of roleRequired) {
-        if (!(rkey in role)) {
-          const err = new Error(`roles[${i}] is missing required field: ${rkey}`)
-          err.status = 400
-          throw err
-        }
-      }
-      if (typeof role.level !== 'number') {
-        const err = new Error(`roles[${i}].level must be a number`)
-        err.status = 400
-        throw err
-      }
-    }
-  }
-  if ('socialLinks' in data) {
-    const sl = data.socialLinks
-    if (!sl || typeof sl !== 'object') {
-      const err = new Error('socialLinks must be an object when provided')
-      err.status = 400
-      throw err
-    }
-    const slFields = ['github', 'linkedin', 'personalEmail']
-    for (const f of slFields) {
-      if (f in sl && typeof sl[f] !== 'string') {
-        const err = new Error(`socialLinks.${f} must be a string when provided`)
-        err.status = 400
-        throw err
-      }
-    }
-  }
+  return parsed.data
 }
 
 function toTimestampFlexible(val, context = 'date') {

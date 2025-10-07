@@ -1,4 +1,5 @@
 const { db } = require('../firebase.js')
+const { formatOfficerDates } = require('../schemas/format')
 
 const COLLECTION = 'officer'
 
@@ -9,7 +10,7 @@ async function listOfficers() {
 
   const officers = []
   snapshot.forEach((d) => {
-    officers.push({ id: d.id, ...d.data() })
+    officers.push(formatOfficerDates({ id: d.id, ...d.data() }))
   })
   return officers
 }
@@ -18,7 +19,7 @@ async function getOfficerById(id) {
   const officerRef = db.collection(COLLECTION).doc(id)
   const doc = await officerRef.get()
   if (!doc.exists) return null
-  return { id: doc.id, ...doc.data() }
+  return formatOfficerDates({ id: doc.id, ...doc.data() })
 }
 
 module.exports = {

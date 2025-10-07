@@ -42,6 +42,7 @@ app.post('/officers/', async (req, res) => {
     } catch (err) {
         console.error(err)
         if (err && err.status === 400) {
+            if (err.errors) return res.status(400).json({ error: err.message, details: err.errors })
             return res.status(400).send({ error: err.message })
         }
         res.status(500).send({ error: 'Failed to create officer' })
@@ -58,6 +59,7 @@ app.patch('/officers/:id', async (req, res) => {
     } catch (err) {
         console.error(err)
         if (err && err.status === 400) {
+            if (err.errors) return res.status(400).json({ error: err.message, details: err.errors })
             return res.status(400).send({ error: err.message })
         }
         if (err && err.status === 404) {
