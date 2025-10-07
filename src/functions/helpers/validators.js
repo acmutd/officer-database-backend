@@ -176,48 +176,56 @@ function validateOfficerPatch(data) {
   }
 }
 
+function toTimestampFlexible(val, context = 'date') {
+  if (val === null) return null
+  // Already a Firestore Timestamp
+  if (val && typeof val === 'object' && typeof val.toDate === 'function' && typeof val.seconds === 'number') return val
+  if (val instanceof Date) {
+    if (isNaN(val.getTime())) {
+      const err = new Error(`${context} is not a valid Date`)
+      err.status = 400
+      throw err
+    }
+    return Timestamp.fromDate(val)
+  }
+  if (typeof val === 'number') {
+    return Timestamp.fromMillis(val)
+  }
+  if (typeof val === 'string') {
+    const parsed = new Date(val)
+    if (isNaN(parsed.getTime())) {
+      const err = new Error(`${context} is not a valid date string`)
+      err.status = 400
+      throw err
+    }
+    return Timestamp.fromDate(parsed)
+  }
+  const err = new Error(`${context} must be null, a valid date string, number (ms), Date, or Firestore Timestamp`)
+  err.status = 400
+  throw err
+}
+
 function convertRoleDates(roles) {
   if (!Array.isArray(roles)) return roles
   return roles.map((role, i) => {
     const r = { ...role }
-
-    const toTimestamp = (val, fieldName) => {
-      if (val === null) return null
-      if (val && typeof val === 'object' && typeof val.toDate === 'function' && typeof val.seconds === 'number') return val
-      if (val instanceof Date) {
-        if (isNaN(val.getTime())) {
-          const err = new Error(`roles[${i}].${fieldName} is not a valid Date`)
-          err.status = 400
-          throw err
-        }
-        return Timestamp.fromDate(val)
-      }
-      if (typeof val === 'number') {
-        return Timestamp.fromMillis(val)
-      }
-      if (typeof val === 'string') {
-        const parsed = new Date(val)
-        if (isNaN(parsed.getTime())) {
-          const err = new Error(`roles[${i}].${fieldName} is not a valid date string`)
-          err.status = 400
-          throw err
-        }
-        return Timestamp.fromDate(parsed)
-      }
-      const err = new Error(`roles[${i}].${fieldName} must be null, a valid date string, number (ms), Date, or Firestore Timestamp`)
-      err.status = 400
-      throw err
-    }
-
-    if ('startDate' in r) r.startDate = toTimestamp(r.startDate, 'startDate')
-    if ('endDate' in r) r.endDate = r.endDate === null ? null : toTimestamp(r.endDate, 'endDate')
-
+    if ('startDate' in r) r.startDate = toTimestampFlexible(r.startDate, `roles[${i}].startDate`)
+    if ('endDate' in r) r.endDate = r.endDate === null ? null : toTimestampFlexible(r.endDate, `roles[${i}].endDate`)
     return r
   })
+}
+
+function convertOfficerDates(payload) {
+  if (!payload || typeof payload !== 'object') return payload
+  const out = { ...payload }
+  if ('joinDate' in out) out.joinDate = toTimestampFlexible(out.joinDate, 'joinDate')
+  if ('roles' in out) out.roles = convertRoleDates(out.roles)
+  return out
 }
 
 module.exports = {
   validateOfficerData,
   validateOfficerPatch,
   convertRoleDates,
+  convertOfficerDates,
 }

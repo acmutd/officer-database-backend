@@ -14,10 +14,9 @@ async function updateOfficer(id, patch) {
 
   validateOfficerPatch(patch)
 
-  const updates = { ...patch }
-  if ('roles' in updates) {
-    updates.roles = convertRoleDates(updates.roles)
-  }
+  // convert joinDate and roles if present in patch
+  const { convertOfficerDates } = require('./helpers/validators.js')
+  const updates = convertOfficerDates({ ...patch })
 
   const docRef = db.collection(COLLECTION).doc(id)
   await docRef.set(updates, { merge: true })
