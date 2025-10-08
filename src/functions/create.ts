@@ -8,10 +8,8 @@ export async function createOfficer(data: any) {
 
   const officerRef = db.collection(COLLECTION)
   const docRef = officerRef.doc()
-  const UID = docRef.id
-  const dataWithUID = { UID, ...parsed }
 
-  await docRef.set(dataWithUID)
+  await docRef.set(parsed)
   const snap = await docRef.get()
   return { id: snap.id, ...snap.data() }
 }
