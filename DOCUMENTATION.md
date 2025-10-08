@@ -17,7 +17,7 @@ There is one route for deleting information in the database
 
 #### PATCH
 There is one route for updating information in the database
-- `PATCH /officer/{id}`
+- `PATCH /officers/{id}`
 This route is unique in the way that it doesn't require a fixed data entry like all other routes
 
 The only fields you need to include in the payload are the fields you need to update. For example, if my profile is currently this:
@@ -61,7 +61,7 @@ The only fields you need to include in the payload are the fields you need to up
 ```
 and I wanted to edit my first name, my lastname, and my access level, all I would include in the payload is:
 ```json
-// PUT /officer/74NmI3q8UfclXQKMbZmp
+// PATCH /officer/74NmI3q8UfclXQKMbZmp
 {
   "firstName": "Bobby",
   "lastName": "Balls",
@@ -74,7 +74,7 @@ and I wanted to edit my first name, my lastname, and my access level, all I woul
 If you wanted to edit the role information in the data above, you would send the entire roles array like this:
 
 ```json
-// PUT /officer/74NmI3q8UfclXQKMbZmp
+// PATCH /officer/74NmI3q8UfclXQKMbZmp
 {
   "roles": [
     // Here, we're adding a new officer role to my roles array, which means that I would be an officer of two divisions at once
