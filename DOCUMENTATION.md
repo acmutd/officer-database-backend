@@ -9,15 +9,15 @@ There are two routes for reading the officer database
 
 #### POST
 There is one route for creating information in the database
-- `POST /officer`, which creates a new officer entry with a randomized UID. It requires all requires fields to be filled out with social links being the only optional field
+- `POST /officers`, which creates a new officer entry with a randomized UID. It requires all required fields to be filled out with social links being the only optional field. A JSON payload is **required** for this route, with an example payload below.
 
 #### DELETE
 There is one route for deleting information in the database
-- `DELETE /officer/{id}`, which deletes the officer entry from the database given the UID of the officer
+- `DELETE /officers/{id}`, which deletes the officer entry from the database given the UID of the officer
 
-#### PUT
+#### PATCH
 There is one route for updating information in the database
-- `PUT /officer/{id}`
+- `PATCH /officer/{id}`
 This route is unique in the way that it doesn't require a fixed data entry like all other routes
 
 The only fields you need to include in the payload are the fields you need to update. For example, if my profile is currently this:
