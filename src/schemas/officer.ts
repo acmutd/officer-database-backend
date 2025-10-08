@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const TermEnum = z.enum(['Fall', 'Spring'])
+export const TermEnum = z.enum(['Fall', 'Spring', 'Summer'])
 
 export const SimpleDate = z.object({
   term: TermEnum,
