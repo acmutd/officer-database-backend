@@ -23,7 +23,7 @@ export const SocialLinksSchema = z.object({
   personalEmail: z.string().optional(),
   linkedin: z.string().optional(),
   github: z.string().optional(),
-}).optional()
+})
 
 export const OfficerSchema = z.object({
   UID: z.string().optional(),
