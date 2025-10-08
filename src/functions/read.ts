@@ -1,26 +1,23 @@
-const { db } = require('../firebase.js')
+import { db } from '../firebase'
 
 const COLLECTION = 'officer'
 
-async function listOfficers() {
+export async function listOfficers() {
   const officerRef = db.collection(COLLECTION)
   const snapshot = await officerRef.get()
   if (snapshot.empty) return []
 
-  const officers = []
+  const officers: any[] = []
   snapshot.forEach((d) => {
     officers.push({ id: d.id, ...d.data() })
   })
   return officers
 }
 
-async function getOfficerById(id) {
+export async function getOfficerById(id: string) {
   const officerRef = db.collection(COLLECTION).doc(id)
   const doc = await officerRef.get()
   if (!doc.exists) return null
-  return { id: doc.id, ...doc.data() }
-}
 
-module.exports = {
-  listOfficers, getOfficerById
+  return { id: doc.id, ...doc.data() }
 }
