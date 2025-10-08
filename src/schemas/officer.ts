@@ -2,6 +2,8 @@ import { z } from 'zod'
 
 export const TermEnum = z.enum(['Fall', 'Spring', 'Summer'])
 
+export const StandingEnum = z.enum(['Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate', 'Alumni'])
+
 export const SimpleDate = z.object({
   term: TermEnum,
   year: z.number().int(),
@@ -32,7 +34,7 @@ export const OfficerSchema = z.object({
   joinDate: SimpleDate,
   UID: z.string().optional(),
   socialLinks: SocialLinksSchema,
-  standing: z.string(),
+  standing: StandingEnum,
   roles: z.array(RoleSchema),
 })
 
