@@ -3,22 +3,22 @@
 The project is split into GET, POST, PUT, and DELETE operations
 
 #### GET
-There are two functions for reading the officer database
+There are two routes for reading the officer database
 - `GET /officers`, which returns all officers in the database
 - `GET /officers/{id}`, which returns the data for a single officer in the officer database given the UID of the officer
 
 #### POST
-There is one function for creating information in the database
+There is one route for creating information in the database
 - `POST /officer`, which creates a new officer entry with a randomized UID. It requires all requires fields to be filled out with social links being the only optional field
 
 #### DELETE
-There is one function for deleting information in the database
+There is one route for deleting information in the database
 - `DELETE /officer/{id}`, which deletes the officer entry from the database given the UID of the officer
 
 #### PUT
-There is function for updating information in the database
+There is one route for updating information in the database
 - `PUT /officer/{id}`
-This function is unique in the way that it doesn't require a fixed data entry like all other functions
+This route is unique in the way that it doesn't require a fixed data entry like all other routes
 
 The only fields you need to include in the payload are the fields you need to update. For example, if my profile is currently this:
 
@@ -59,7 +59,7 @@ The only fields you need to include in the payload are the fields you need to up
   },
 }
 ```
-and I wanted to edit my first name, my lastname, and my standing, all I would include in the payload is:
+and I wanted to edit my first name, my lastname, and my access level, all I would include in the payload is:
 ```json
 // PUT /officer/74NmI3q8UfclXQKMbZmp
 {
@@ -69,7 +69,7 @@ and I wanted to edit my first name, my lastname, and my standing, all I would in
 }
 ```
 
-The **ONLY ONLY ONLY** exception to this rule is the roles and the expected graduation date, **those need all objects to be updated with it**
+**However**, any objects in the officer data, like the dates and roles, **those need all fields to be updated with it**
 
 If you wanted to edit the role information in the data above, you would send the entire roles array like this:
 
@@ -77,7 +77,7 @@ If you wanted to edit the role information in the data above, you would send the
 // PUT /officer/74NmI3q8UfclXQKMbZmp
 {
   "roles": [
-    // Here, we're adding a new officer role to my roles array, which means that I would be an officer of two divisions at once, since both endDates are null
+    // Here, we're adding a new officer role to my roles array, which means that I would be an officer of two divisions at once
     {
       "title": "ACM Events Officer",
       "division": "Community",
