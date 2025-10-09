@@ -26,7 +26,6 @@ export const SocialLinksSchema = z.object({
 })
 
 export const OfficerSchema = z.object({
-  UID: z.string(),
   firstName: z.string(),
   lastName: z.string(),
   netId: z.string(),
