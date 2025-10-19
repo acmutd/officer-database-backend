@@ -1,0 +1,53 @@
+serviceAccount: projects/acm-officer-database/serviceAccounts/cloud-build-officer-db@acm-officer-database.iam.gserviceaccount.com
+steps:
+  # Download firebase-creds.json from Secret Manager
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud secrets versions access latest --secret="firebase-creds" > firebase-creds.json
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-south1-docker.pkg.dev/$PROJECT_ID/officer-db/my-image:$COMMIT_SHA'
+      - '-t'
+      - 'us-south1-docker.pkg.dev/$PROJECT_ID/officer-db/my-image:latest'
+      - '.'
+
+  # Push the container image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-south1-docker.pkg.dev/$PROJECT_ID/officer-db/my-image:$COMMIT_SHA'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-south1-docker.pkg.dev/$PROJECT_ID/officer-db/my-image:latest'
+
+  # Deploy container image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'app'
+      - '--image'
+      - 'us-south1-docker.pkg.dev/$PROJECT_ID/officer-db/my-image:$COMMIT_SHA'
+      - '--region'
+      - 'us-south1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--port'
+      - '8080'
+
+images:
+  - 'us-south1-docker.pkg.dev/$PROJECT_ID/officer-db/my-image:$COMMIT_SHA'
+  - 'us-south1-docker.pkg.dev/$PROJECT_ID/officer-db/my-image:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
