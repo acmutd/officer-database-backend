@@ -2,7 +2,7 @@ import express from 'express'
 import * as functions from './functions'
 
 const app = express()
-const port = 8383
+const port = 8080
 
 app.use(express.json())
 
