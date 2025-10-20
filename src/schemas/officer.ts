@@ -1,41 +1,76 @@
-import { z } from 'zod'
+import { z } from "zod";
 
-export const TermEnum = z.enum(['Fall', 'Spring', 'Summer'])
+export const StandingSchema = z.enum([
+	"Freshman",
+	"Sophomore",
+	"Junior",
+	"Senior",
+	"Graduate",
+	"Alumni",
+]);
 
-export const StandingEnum = z.enum(['Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate', 'Alumni'])
-
-export const DivisionEnum = z.enum(['Media', 'Research', 'Development', 'Projects', 'Executive', 'Education', 'Community', 'HackUTD', 'Industry'])
-
-export const SimpleDate = z.object({
-  term: TermEnum,
-  year: z.number().int(),
-})
-
-export const RoleSchema = z.object({
-  title: z.string(),
-  division: DivisionEnum,
-  level: z.number(),
-  startDate: SimpleDate,
-  endDate: SimpleDate.nullable(),
-})
+export const DivisionEnum = z.enum([
+	"Media",
+	"Research",
+	"Development",
+	"Projects",
+	"Education",
+	"Executive",
+	"Community",
+	"HackUTD",
+	"Industry",
+]);
 
 export const SocialLinksSchema = z.object({
-  personalEmail: z.string().optional(),
-  linkedin: z.string().optional(),
-  github: z.string().optional(),
-})
+	linkedin: z.string().url().optional(),
+	github: z.string().url().optional(),
+	personalEmail: z.string().email().optional(),
+});
+
+export const TermSchema = z.object({
+	term: z.enum(["Fall", "Spring", "Summer"]),
+	year: z.number().int().min(2020),
+});
+
+export const InternshipsSchema = z.object({
+	title: z.string().min(1),
+	company: z.string().min(1),
+	startDate: z.string().min(1),
+	endDate: z.string().optional(),
+});
+
+export const ResearchSchema = z.object({
+	title: z.string().min(1),
+	lab: z.string().min(1),
+	principalInvestigator: z.array(z.string().min(1)),
+	startDate: z.string().min(1),
+	endDate: z.string().optional(),
+});
+
+export const RoleSchema = z.object({
+	title: z.string().min(1),
+	division: DivisionEnum,
+	level: z.number().int().min(1).max(3),
+	startDate: TermSchema,
+	endDate: TermSchema.nullable(),
+});
 
 export const OfficerSchema = z.object({
-  firstName: z.string(),
-  lastName: z.string(),
-  netId: z.string(),
-  accessLevel: z.number(),
-  isActive: z.boolean(),
-  standing: StandingEnum,
-  expectedGrad: SimpleDate,
-  joinDate: SimpleDate,
-  socialLinks: SocialLinksSchema,
-  roles: z.array(RoleSchema),
-})
+	id: z.string().min(1),
+	firstName: z.string().min(1),
+	lastName: z.string().min(1),
+	netId: z.string().min(1),
+	resume: z.string().optional(),
+	socialLinks: SocialLinksSchema,
+	creditStanding: StandingSchema,
+	yearStanding: StandingSchema,
+	expectedGrad: TermSchema,
+	internships: z.array(InternshipsSchema),
+	research: z.array(ResearchSchema),
+	joinDate: TermSchema,
+	roles: z.array(RoleSchema),
+	accessLevel: z.number().int().min(1).max(3),
+	isActive: z.boolean(),
+});
 
-export type Officer = z.infer<typeof OfficerSchema>
+export type Officer = z.infer<typeof OfficerSchema>;

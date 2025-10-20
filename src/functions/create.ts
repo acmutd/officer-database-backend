@@ -1,15 +1,13 @@
-import { db } from '../firebase'
-import { validateOfficerData } from './helpers/validators'
+import { db } from "../firebase";
+import { validateOfficerData } from "./helpers/validators";
 
-const COLLECTION = 'officer'
+const COLLECTION = "officer";
 
 export async function createOfficer(data: any) {
-  const parsed = validateOfficerData(data)
+	const parsed = validateOfficerData(data);
 
-  const officerRef = db.collection(COLLECTION)
-  const docRef = officerRef.doc()
+	const officerRef = db.collection(COLLECTION);
+	await officerRef.doc(parsed.id).set(parsed);
 
-  await docRef.set(parsed)
-  const snap = await docRef.get()
-  return { id: snap.id, ...snap.data() }
+	return parsed;
 }
