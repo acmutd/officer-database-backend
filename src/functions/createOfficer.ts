@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-
 import { db } from "../firebase";
 import { validateRequest } from "../middleware";
 import { validateOfficerData } from "./helpers/validators";
