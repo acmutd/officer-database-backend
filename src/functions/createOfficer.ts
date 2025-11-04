@@ -1,0 +1,13 @@
+import { db } from "../firebase";
+import { validateRequest } from "../middleware";
+import { validateOfficerData } from "./helpers/validators";
+import { Request, Response } from "express";
+
+export const createOfficer = [validateRequest, async (req: Request, res: Response) => {
+	const parsed = validateOfficerData(req.body);
+
+	const officerRef = db.collection("officer");
+	await officerRef.doc(parsed.id).set(parsed);
+
+	return res.status(201).json(parsed);
+}];

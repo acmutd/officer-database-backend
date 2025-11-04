@@ -1,9 +1,13 @@
 import { db } from '../firebase'
 import { validateOfficerPatch } from './helpers/validators'
+import { validateRequest } from "../middleware";
+import { Request, Response } from "express";
 
 const COLLECTION = 'officer'
 
-export async function updateOfficer(id: string, patch: any) {
+export const updateOfficer = [validateRequest, async (req: Request, res: Response) => {
+  const { id } = req.params
+  const patch = req.body
   if (!id || typeof id !== 'string') {
     const err: any = new Error('Invalid id')
     err.status = 400
@@ -22,5 +26,5 @@ export async function updateOfficer(id: string, patch: any) {
     err.status = 404
     throw err
   }
-  return { id: updated.id, ...updated.data() }
-}
+  return updated.data();
+}];
