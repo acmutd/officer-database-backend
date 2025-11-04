@@ -1,7 +1,7 @@
-import { RequestHandler } from "express";
+import { RequestHandler, Request, Response } from "express";
 import { auth } from "./firebase";
 
-export const validateRequest: RequestHandler = async (req, res, next) => {
+export const validateRequest: RequestHandler = async (req: Request, res: Response, next) => {
 	const authHeader = req.headers.authorization;
 	const userId = req.get("X-User-Id");
 	if (!authHeader || !userId) {

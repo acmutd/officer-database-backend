@@ -1,9 +1,8 @@
+import { Request, Response } from "express";
+
 import { db } from '../firebase'
 import { validateOfficerPatch } from './helpers/validators'
 import { validateRequest } from "../middleware";
-import { Request, Response } from "express";
-
-const COLLECTION = 'officer'
 
 export const updateOfficer = [validateRequest, async (req: Request, res: Response) => {
   const { id } = req.params
@@ -17,7 +16,7 @@ export const updateOfficer = [validateRequest, async (req: Request, res: Respons
   const parsed = validateOfficerPatch(patch)
   const updates = { ...parsed }
 
-  const docRef = db.collection(COLLECTION).doc(id)
+  const docRef = db.collection("officer").doc(id)
   await docRef.set(updates, { merge: true })
 
   const updated = await docRef.get()

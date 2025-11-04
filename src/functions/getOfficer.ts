@@ -1,6 +1,7 @@
+import { Request, Response } from "express";
+
 import { db } from '../firebase';
 import { validateRequest } from "../middleware";
-import { Request, Response } from "express";
 
 export const getOfficer = [validateRequest, async (req: Request, res: Response) => {
   const { id } = req.params;
