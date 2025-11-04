@@ -8,5 +8,5 @@ export const getOfficer = [validateRequest, async (req: Request, res: Response) 
   const doc = await officerRef.get()
   if (!doc.exists) return null
 
-  return { id: doc.id, ...doc.data() }
+  return doc.data()
 }];

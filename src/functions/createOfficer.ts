@@ -9,5 +9,6 @@ export const createOfficer = [validateRequest, async (req: Request, res: Respons
 	const officerRef = db.collection("officer");
 	await officerRef.doc(parsed.id).set(parsed);
 
-	return res.status(201).json(parsed);
+	const { id, ...body } = parsed as any;
+	return res.status(201).json(body);
 }];

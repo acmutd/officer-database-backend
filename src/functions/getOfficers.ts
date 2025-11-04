@@ -9,7 +9,8 @@ export const getOfficers = [validateRequest, async (req: Request, res: Response)
 
   const officers: any[] = []
   snapshot.forEach((d) => {
-    officers.push({ id: d.id, ...d.data() })
+    officers.push(d.data())
   })
+  
   return officers
 }];
