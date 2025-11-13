@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { db } from '../firebase'
-import { validateOfficerPatch } from './helpers/validators'
+import { validateOfficerPatch } from '../helpers/validators'
 import { validateRequest } from "../middleware";
 
 export const updateOfficer = [validateRequest, async (req: Request, res: Response) => {
