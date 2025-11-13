@@ -3,7 +3,7 @@ import { auth } from "./firebase";
 
 type Handler = (req: Request, res: Response) => Promise<void> | void;
 
-export const withAuth = (handler: Handler) => {
+export const validateRequest = (handler: Handler) => {
 	return async (req: Request, res: Response) => {
 		const authHeader = req.headers.authorization;
 		const userId = req.get("X-User-Id");

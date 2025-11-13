@@ -1,16 +1,20 @@
-import { Request, Response } from "express";
-import { db } from '../firebase';
+import { Request, Response } from "@google-cloud/functions-framework";
+import { db } from "../firebase";
 import { validateRequest } from "../middleware";
 
-export const getOfficers = [validateRequest, async (req: Request, res: Response) => {
-  const officerRef = db.collection("officer")
-  const snapshot = await officerRef.get()
-  if (snapshot.empty) return []
+export const getOfficers = validateRequest(async (req: Request, res: Response): Promise<void> => {
+  try {
+    const snapshot = await db.collection("officer").get();
 
-  const officers: any[] = []
-  snapshot.forEach((d) => {
-    officers.push(d.data())
-  })
-  
-  return officers
-}];
+    const officers = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    res.status(200).json(officers);
+  } catch (error) {
+    res.status(500).json({
+      error: error instanceof Error ? error.message : 'Server error'
+    });
+  }
+});
