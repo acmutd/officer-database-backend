@@ -19,7 +19,7 @@ export const deleteOfficer = validateRequest(async (req: Request, res: Response)
 
     await officerRef.delete();
 
-    res.status(200).json({ message: "Officer deleted successfully" });
+    res.status(200).json(officerDoc.data());
   } catch (error) {
     res.status(500).json({
       error: error instanceof Error ? error.message : 'Server error'

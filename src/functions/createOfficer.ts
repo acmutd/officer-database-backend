@@ -10,8 +10,7 @@ export const createOfficer = validateRequest(async (req: Request, res: Response)
 		const officerRef = db.collection("officer");
 		await officerRef.doc(parsed.id).set(parsed);
 
-		const { id, ...body } = parsed as any;
-		res.status(201).json(body);
+		res.status(201).json(parsed);
 	} catch (error) {
 		res.status(400).json({
 			error: error instanceof Error ? error.message : 'Invalid request'

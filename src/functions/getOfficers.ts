@@ -6,10 +6,7 @@ export const getOfficers = validateRequest(async (req: Request, res: Response): 
   try {
     const snapshot = await db.collection("officer").get();
 
-    const officers = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+    const officers = snapshot.docs.map(doc => doc.data());
 
     res.status(200).json(officers);
   } catch (error) {
