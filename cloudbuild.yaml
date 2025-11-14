@@ -31,11 +31,12 @@ steps:
           func_name=$(basename "$file" .js)
           echo "Deploying function: $func_name"
           gcloud functions deploy "$func_name" \
+            --gen2 \
             --runtime=nodejs20 \
             --region=us-south1 \
+            --source=. \
             --trigger-http \
             --allow-unauthenticated \
-            --source=. \
             --entry-point="$func_name" \
             --set-env-vars=GOOGLE_APPLICATION_CREDENTIALS=firebase-creds.json
         done
