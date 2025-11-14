@@ -27,7 +27,8 @@ export const updateOfficer = validateRequest(async (req: Request, res: Response)
 
     await officerRef.update(updateData);
 
-    res.status(200).json(updateData);
+    const updatedDoc = await officerRef.get();
+    res.status(200).json(updatedDoc.data());
   } catch (error) {
     res.status(400).json({
       error: error instanceof Error ? error.message : 'Invalid request'
