@@ -5,10 +5,11 @@ import { validateOfficerPatch } from "../helpers/validators";
 
 export const updateOfficer = validateRequest(async (req: Request, res: Response): Promise<void> => {
   try {
-    const { id } = req.params;
+    const id = req.query.id as string;
 
     if (!id) {
       res.status(400).json({ error: "Officer ID is required" });
+      return;
     }
 
     const officerRef = db.collection("officer").doc(id);
@@ -16,15 +17,17 @@ export const updateOfficer = validateRequest(async (req: Request, res: Response)
 
     if (!officerDoc.exists) {
       res.status(404).json({ error: "Officer not found" });
+      return;
     }
 
     // Validate the partial update data
     const parsed = validateOfficerPatch(req.body);
 
-    await officerRef.update(parsed);
+    const { id: _, ...updateData } = parsed as any;
 
-    const updated = await officerRef.get();
-    res.status(200).json(updated.data());
+    await officerRef.update(updateData);
+
+    res.status(200).json(updateData);
   } catch (error) {
     res.status(400).json({
       error: error instanceof Error ? error.message : 'Invalid request'
