@@ -24,8 +24,8 @@ This is the backend repository for the ACM Officer Database
 
 3. **Configure Firebase credentials**
 
-   > [!CAUTION]
-   > Never commit `firebase-creds.json` to version control!
+ > [!CAUTION]
+ > Never commit `firebase-creds.json` to version control!
 
    - Go to [Firebase Console](https://console.firebase.google.com/)
    - Select your project
@@ -39,27 +39,37 @@ This is the backend repository for the ACM Officer Database
    ```
 
 5. **Start the development server**
-   ```bash
-   npm run dev
-   ```
 
-   The server will start on `http://localhost:8080`
+> [!TIP]
+> The Functions Framework runs **one function at a time**. By default, `npm run dev` runs `getOfficers`.
 
-### Development Workflow
+> [!TIP]
+> You may want to disable the auth and CORS checkers by removing it from the function you want to run, this way you can open it in your browser and not get blocked
 
-**Build TypeScript:**
-```bash
-npm run build
+**To test different functions:**
+
+Edit the `dev` script in `package.json` and change the `--target` parameter:
+
+```json
+"dev": "npm run build && functions-framework --target=FUNCTION_NAME --source=dist --port=8080"
 ```
 
-**Run locally with Functions Framework:**
-```bash
-npm run dev
-```
+Replace `FUNCTION_NAME` with:
+- `getOfficers` - GET all officers
+- `getOfficer` - GET single officer by ID (query param `?id=...`)
+- `createOfficer` - POST create new officer
+- `updateOfficer` - PATCH update officer (query param `?id=...`)
+- `deleteOfficer` - DELETE officer (query param `?id=...`)
 
-**Test the API:**
+Then restart the dev server and test at `http://localhost:8080`
 
-More to come :)
+**Example workflow:**
+1. Change target to `createOfficer` in package.json
+2. Run `npm run dev`
+3. Send POST request to `http://localhost:8080` with officer data
+4. Stop server, change target to `getOfficers`
+5. Run `npm run dev` again
+6. Visit `http://localhost:8080` to see all officers
 
 ### Project Structure
 
@@ -91,9 +101,16 @@ officer-database-backend/
 
 ### Environment Notes
 
-- **Local:** Uses Functions Framework to simulate Cloud Functions locally
-- **Production:** Deployed as individual Google Cloud Functions
+- **Local:** Uses Functions Framework to simulate Cloud Functions. Each function runs independently at `http://localhost:8080` (change `--target` in package.json to switch functions)
+- **Production:** Each function is deployed separately with its own URL. All functions are accessible via their individual Cloud Functions endpoints.
 - **Database:** Firestore collection `officer`
+
+### Local vs Production
+
+| Environment | Routing | URL Structure |
+|-------------|---------|---------------|
+| **Local** | One function at a time on port 8080 | `http://localhost:8080` (function determined by `--target` flag) |
+| **Production** | Each function has its own endpoint | `https://REGION-PROJECT.cloudfunctions.net/FUNCTION_NAME` |
 
 ### Troubleshooting
 

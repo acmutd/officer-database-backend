@@ -1,11 +1,5 @@
-# ACM Officer Database - Backend
-This is the backend repository for the ACM Officer Database
-
-## Local Development
-
-Base URL: Your Google Cloud Functions URL
-
-All endpoints require JSON request bodies where applicable and return JSON responses.
+# API Documentation
+This page will explain the intricacies of my wonderful creation, the ACM Officer Database CRUD operations
 
 ### Get All Officers
 
