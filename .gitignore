@@ -2,3 +2,5 @@ node_modules/*
 firebase-creds.json
 .env
 *.rest
+dist/
+deploy.sh

@@ -1,53 +1,45 @@
 serviceAccount: projects/acm-officer-database/serviceAccounts/cloud-build-officer-db@acm-officer-database.iam.gserviceaccount.com
+
 steps:
-  # Download firebase-creds.json from Secret Manager
+  # 1. Download Firebase credentials from Secret Manager
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
+        echo "Retrieving Firebase credentials..."
         gcloud secrets versions access latest --secret="firebase-creds" > firebase-creds.json
-  # Build the container image
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'build'
-      - '-t'
-      - 'us-south1-docker.pkg.dev/$PROJECT_ID/officer-db/my-image:$COMMIT_SHA'
-      - '-t'
-      - 'us-south1-docker.pkg.dev/$PROJECT_ID/officer-db/my-image:latest'
-      - '.'
 
-  # Push the container image to Artifact Registry
-  - name: 'gcr.io/cloud-builders/docker'
+  # 2. Install dependencies and build TypeScript
+  - name: 'node'
+    entrypoint: 'bash'
     args:
-      - 'push'
-      - 'us-south1-docker.pkg.dev/$PROJECT_ID/officer-db/my-image:$COMMIT_SHA'
+      - '-c'
+      - |
+        echo "Installing dependencies and building..."
+        npm ci
+        npm run build
 
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'push'
-      - 'us-south1-docker.pkg.dev/$PROJECT_ID/officer-db/my-image:latest'
-
-  # Deploy container image to Cloud Run
+  # 3. Deploy each compiled function from dist/functions
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: gcloud
+    entrypoint: 'bash'
     args:
-      - 'run'
-      - 'deploy'
-      - 'app'
-      - '--image'
-      - 'us-south1-docker.pkg.dev/$PROJECT_ID/officer-db/my-image:$COMMIT_SHA'
-      - '--region'
-      - 'us-south1'
-      - '--platform'
-      - 'managed'
-      - '--allow-unauthenticated'
-      - '--port'
-      - '8080'
-
-images:
-  - 'us-south1-docker.pkg.dev/$PROJECT_ID/officer-db/my-image:$COMMIT_SHA'
-  - 'us-south1-docker.pkg.dev/$PROJECT_ID/officer-db/my-image:latest'
+      - '-c'
+      - |
+        echo "Deploying all functions in dist/functions..."
+        for file in dist/functions/*.js; do
+          func_name=$(basename "$file" .js)
+          echo "Deploying function: $func_name"
+          gcloud functions deploy "$func_name" \
+            --gen2 \
+            --runtime=nodejs20 \
+            --region=us-south1 \
+            --source=. \
+            --trigger-http \
+            --allow-unauthenticated \
+            --entry-point="$func_name" \
+            --set-env-vars=GOOGLE_APPLICATION_CREDENTIALS=firebase-creds.json
+        done
 
 options:
   logging: CLOUD_LOGGING_ONLY

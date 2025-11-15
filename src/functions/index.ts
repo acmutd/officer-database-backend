@@ -1,4 +1,5 @@
-export * from './read'
-export * from './create'
-export * from './update'
-export * from './delete'
+export { createOfficer } from './createOfficer';
+export { getOfficer } from './getOfficer';
+export { getOfficers } from './getOfficers';
+export { updateOfficer } from './updateOfficer';
+export { deleteOfficer } from './deleteOfficer';
