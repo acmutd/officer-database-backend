@@ -40,36 +40,38 @@ This is the backend repository for the ACM Officer Database
 
 5. **Start the development server**
 
-> [!TIP]
-> The Functions Framework runs **one function at a time**. By default, `npm run dev` runs `getOfficers`.
+> [!NOTE]
+> The Functions Framework runs **one function at a time**. Use `npm run dev` to see an interactive menu, or use specific dev scripts.
 
 > [!TIP]
 > You may want to disable the auth and CORS checkers by removing it from the function you want to run, this way you can open it in your browser and not get blocked
 
-**To test different functions:**
+**Quick start (interactive menu):**
 
-Edit the `dev` script in `package.json` and change the `--target` parameter:
-
-```json
-"dev": "npm run build && functions-framework --target=FUNCTION_NAME --source=dist --port=8080"
+```bash
+npm run dev
 ```
 
-Replace `FUNCTION_NAME` with:
-- `getOfficers` - GET all officers
-- `getOfficer` - GET single officer by ID (query param `?id=...`)
-- `createOfficer` - POST create new officer
-- `updateOfficer` - PATCH update officer (query param `?id=...`)
-- `deleteOfficer` - DELETE officer (query param `?id=...`)
+This will show a menu where you can select which function to run.
 
-Then restart the dev server and test at `http://localhost:8080`
+**Or run a specific function directly:**
+
+```bash
+npm run dev:getOfficers    # GET all officers
+npm run dev:getOfficer     # GET single officer by ID (query param ?id=...)
+npm run dev:createOfficer  # POST create new officer
+npm run dev:updateOfficer  # PATCH update officer (query param ?id=...)
+npm run dev:deleteOfficer  # DELETE officer (query param ?id=...)
+```
+
+All functions run at `http://localhost:8080`
 
 **Example workflow:**
-1. Change target to `createOfficer` in package.json
-2. Run `npm run dev`
-3. Send POST request to `http://localhost:8080` with officer data
-4. Stop server, change target to `getOfficers`
-5. Run `npm run dev` again
-6. Visit `http://localhost:8080` to see all officers
+1. Run `npm run dev` and select "createOfficer" from menu
+2. Send POST request to `http://localhost:8080` with officer data
+3. Stop server (Ctrl+C)
+4. Run `npm run dev` and select "getOfficers" from menu
+5. Visit `http://localhost:8080` to see all officers
 
 ### Project Structure
 
@@ -101,7 +103,7 @@ officer-database-backend/
 
 ### Environment Notes
 
-- **Local:** Uses Functions Framework to simulate Cloud Functions. Each function runs independently at `http://localhost:8080` (change `--target` in package.json to switch functions)
+- **Local:** Uses Functions Framework to simulate Cloud Functions. Each function runs independently at `http://localhost:8080` (use `npm run dev:FUNCTION_NAME` to run a specific function)
 - **Production:** Each function is deployed separately with its own URL. All functions are accessible via their individual Cloud Functions endpoints.
 - **Database:** Firestore collection `officer`
 
