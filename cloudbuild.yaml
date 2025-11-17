@@ -33,7 +33,7 @@ steps:
           gcloud functions deploy "$func_name" \
             --gen2 \
             --runtime=nodejs20 \
-            --region=us-south1 \
+            --region=us-central1 \
             --source=. \
             --trigger-http \
             --allow-unauthenticated \
