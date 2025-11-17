@@ -3,38 +3,128 @@ This is the backend repository for the ACM Officer Database
 
 ## Local Development
 
-#### 1. Project Setup
-1. Clone the repository and install the dependencies:
-```bash
-$ git clone https://github.com/acmutd/officer-database-backend.git
-$ cd officer-database-backend
-$ npm install # Or yarn install
-```
+### Prerequisites
+- Node.js (v18 or higher)
+- npm or yarn
+- Firebase Admin SDK credentials
+- Google Cloud SDK (for deployment)
 
-#### 2. Firestore Database Credentials
-> [!CAUTION]
-> Do not ignore this step
+### Setup
 
-1. Open your Firebase project settings
-2. Go to the tab that says "Service accounts"
-3. Select the **Node.js** option, then click on the bright blue button that says "Generate new private key" then click Generate key in the modal.
-4. It'll download a file containing all the login credentials for the SDK, **move** the file to the top level directory of the repository and **rename** it to `firebase-creds.json`.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/acmutd/officer-database-backend.git
+   cd officer-database-backend
+   ```
 
-#### 3. Run the Backend
-1. Start the development server
-```bash
-$ npm run dev
-```
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-#### 4. Testing
+3. **Configure Firebase credentials**
+
+ > [!CAUTION]
+ > Never commit `firebase-creds.json` to version control!
+
+   - Go to [Firebase Console](https://console.firebase.google.com/)
+   - Select your project
+   - Navigate to **Project Settings** → **Service Accounts**
+   - Click **Generate New Private Key**
+   - Save the downloaded file as `firebase-creds.json` in the project root
+
+4. **Build the TypeScript code**
+   ```bash
+   npm run build
+   ```
+
+5. **Start the development server**
+
+> [!NOTE]
+> The Functions Framework runs **one function at a time**. Use `npm run dev` to see an interactive menu, or use specific dev scripts.
+
 > [!TIP]
-> This isn't needed to run the repository, but it's always good to run tests to make sure everything is working
+> You may want to disable the auth and CORS checkers by removing it from the function you want to run, this way you can open it in your browser and not get blocked
 
-1. Install the [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) VS Code extension
-2. Create a new file called `test.rest`
-3. Paste this into the file:
+**Quick start (interactive menu):**
+
+```bash
+npm run dev
 ```
-### GET OFFICERS
-GET http://localhost:8383/officers
+
+This will show a menu where you can select which function to run.
+
+**Or run a specific function directly:**
+
+```bash
+npm run dev:getOfficers    # GET all officers
+npm run dev:getOfficer     # GET single officer by ID (query param ?id=...)
+npm run dev:createOfficer  # POST create new officer
+npm run dev:updateOfficer  # PATCH update officer (query param ?id=...)
+npm run dev:deleteOfficer  # DELETE officer (query param ?id=...)
 ```
-Any tests written in the file should be formatted like that, with a title above each test. The extension will recognize the formatting and insert a "Send Request" button below the title, clicking it will run the test!
+
+All functions run at `http://localhost:8080`
+
+**Example workflow:**
+1. Run `npm run dev` and select "createOfficer" from menu
+2. Send POST request to `http://localhost:8080` with officer data
+3. Stop server (Ctrl+C)
+4. Run `npm run dev` and select "getOfficers" from menu
+5. Visit `http://localhost:8080` to see all officers
+
+### Project Structure
+
+```
+officer-database-backend/
+├── src/
+│   ├── functions/          # Cloud Functions (CRUD operations)
+│   │   ├── createOfficer.ts
+│   │   ├── getOfficers.ts
+│   │   ├── getOfficer.ts
+│   │   ├── updateOfficer.ts
+│   │   └── deleteOfficer.ts
+│   ├── helpers/            # Validation utilities
+│   │   └── validators.ts
+│   ├── types/              # TypeScript types and Zod schemas
+│   │   └── officer.ts
+│   ├── middleware.ts       # Request validation middleware
+│   ├── firebase.ts         # Firebase Admin SDK initialization
+│   └── index.ts            # Function exports
+├── tests/                  # Test scripts
+│   ├── api-test.js
+│   └── validator-test.js
+├── dist/                   # Compiled JavaScript (generated)
+├── firebase-creds.json     # Firebase credentials (not in git)
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+### Environment Notes
+
+- **Local:** Uses Functions Framework to simulate Cloud Functions. Each function runs independently at `http://localhost:8080` (use `npm run dev:FUNCTION_NAME` to run a specific function)
+- **Production:** Each function is deployed separately with its own URL. All functions are accessible via their individual Cloud Functions endpoints.
+- **Database:** Firestore collection `officer`
+
+### Local vs Production
+
+| Environment | Routing | URL Structure |
+|-------------|---------|---------------|
+| **Local** | One function at a time on port 8080 | `http://localhost:8080` (function determined by `--target` flag) |
+| **Production** | Each function has its own endpoint | `https://REGION-PROJECT.cloudfunctions.net/FUNCTION_NAME` |
+
+### Troubleshooting
+
+**"Cannot find module" errors:**
+- Run `npm run build` to compile TypeScript
+
+**Firebase authentication errors:**
+- Verify `firebase-creds.json` exists in project root
+- Check that the service account has Firestore permissions
+
+**Port already in use:**
+- Change the port in `package.json` dev script or kill the process using port 8080
+
+**Type errors:**
+- Run `npm install` to ensure all `@types/*` packages are installed

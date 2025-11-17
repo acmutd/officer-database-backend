@@ -1,4 +1,4 @@
-import { OfficerSchema } from "../../schemas/officer";
+import { OfficerSchema } from "../types/officer";
 
 export function validateOfficerData(data: any) {
 	const parsed = OfficerSchema.safeParse(data);
