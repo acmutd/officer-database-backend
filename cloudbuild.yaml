@@ -28,8 +28,11 @@ steps:
             --source=. \
             --trigger-http \
             --allow-unauthenticated \
+            --set-secrets="FIREBASE_CREDS=firebase-creds:latest" \
             --entry-point="$func_name"
         done
+
+timeout: '1800s'
 
 options:
   logging: CLOUD_LOGGING_ONLY
