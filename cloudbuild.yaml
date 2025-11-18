@@ -1,17 +1,8 @@
 serviceAccount: projects/acm-officer-database/serviceAccounts/cloud-build-officer-db@acm-officer-database.iam.gserviceaccount.com
 
 steps:
-  # 1. Download Firebase credentials from Secret Manager
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        echo "Retrieving Firebase credentials..."
-        gcloud secrets versions access latest --secret="firebase-creds" > firebase-creds.json
-
-  # 2. Install dependencies and build TypeScript
-  - name: 'node'
+  # 1. Install dependencies and build TypeScript
+  - name: 'node:20'
     entrypoint: 'bash'
     args:
       - '-c'
@@ -20,7 +11,7 @@ steps:
         npm ci
         npm run build
 
-  # 3. Deploy each compiled function from dist/functions
+  # 2. Deploy each compiled function from dist/functions
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'bash'
     args:
@@ -37,8 +28,7 @@ steps:
             --source=. \
             --trigger-http \
             --allow-unauthenticated \
-            --entry-point="$func_name" \
-            --set-env-vars=GOOGLE_APPLICATION_CREDENTIALS=firebase-creds.json
+            --entry-point="$func_name"
         done
 
 options:
