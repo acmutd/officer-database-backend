@@ -28,13 +28,13 @@ steps:
       - '-c'
       - |
         echo "Deploying functions..."
-        functions=("createOfficer" "getOfficer" "getOfficers" "updateOfficer" "deleteOfficer")
+        functions=("getOfficers" "getOfficer" "createOfficer" "updateOfficer" "deleteOfficer")
         for func in "${functions[@]}"; do
           echo "Deploying function: $func"
           gcloud functions deploy "$func" \
             --gen2 \
             --runtime=nodejs20 \
-            --region=us-central1 \
+            --region=us-south1 \
             --source=. \
             --entry-point="$func" \
             --trigger-http \
