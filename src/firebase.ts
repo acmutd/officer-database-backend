@@ -1,17 +1,26 @@
 import admin from "firebase-admin";
-import * as path from "path";
 import * as fs from "fs";
 
 if (!admin.apps.length) {
-  const credsPath = path.resolve(__dirname, "../firebase-creds.json");
+  try {
+    // Cloud Functions mounts secrets as files at /run/secrets/SECRET_NAME
+    const secretPath = process.env.FIREBASE_CREDS ? `/run/secrets/${process.env.FIREBASE_CREDS}` : null;
 
-  // Check if credentials file exists (Cloud Build will have it)
-  if (fs.existsSync(credsPath)) {
-    admin.initializeApp({
-      credential: admin.credential.cert(credsPath)
-    });
-  } else {
-    // Fallback to default credentials (local dev with env var or Cloud Functions default)
+    if (secretPath && fs.existsSync(secretPath)) {
+      // Production: read from Secret Manager
+      const credentialsJson = JSON.parse(fs.readFileSync(secretPath, 'utf-8'));
+      admin.initializeApp({
+        credential: admin.credential.cert(credentialsJson)
+      });
+      console.log('Firebase initialized with Secret Manager credentials');
+    } else {
+      // Development/fallback: use Application Default Credentials
+      admin.initializeApp();
+      console.log('Firebase initialized with Application Default Credentials');
+    }
+  } catch (error) {
+    console.error('Error initializing Firebase:', error);
+    // Final fallback to Application Default Credentials
     admin.initializeApp();
   }
 }
