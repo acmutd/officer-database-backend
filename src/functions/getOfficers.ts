@@ -2,7 +2,7 @@ import { Request, Response } from "@google-cloud/functions-framework";
 import { db } from "../firebase";
 import { validateRequest } from "../middleware";
 
-export const getOfficers = validateRequest(async (req: Request, res: Response): Promise<void> => {
+export const getOfficers = (async (req: Request, res: Response): Promise<void> => {
   try {
     const snapshot = await db.collection("officer").get();
 
