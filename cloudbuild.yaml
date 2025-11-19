@@ -8,8 +8,10 @@ steps:
       - '-c'
       - |
         echo "Installing dependencies and building..."
+        echo "$$FIREBASE_CREDS" > firebase-creds.json
         npm ci
         npm run build
+    secretEnv: ['FIREBASE_CREDS']
 
   # 2. Deploy each function
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -37,3 +39,8 @@ timeout: '1800s'
 
 options:
   logging: CLOUD_LOGGING_ONLY
+
+availableSecrets:
+  secretManager:
+  - versionName: projects/acm-officer-database/secrets/firebase-creds/versions/latest
+    env: 'FIREBASE_CREDS'
