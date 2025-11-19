@@ -3,7 +3,7 @@ import { db } from "../firebase";
 import { validateRequest } from "../middleware";
 import { validateOfficerData } from "../helpers/validators";
 
-export const createOfficer = (async (req: Request, res: Response): Promise<void> => {
+export const createOfficer = validateRequest(async (req: Request, res: Response): Promise<void> => {
 	try {
 		const parsed = validateOfficerData(req.body);
 

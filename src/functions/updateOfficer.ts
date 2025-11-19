@@ -3,7 +3,7 @@ import { db } from "../firebase";
 import { validateRequest } from "../middleware";
 import { validateOfficerPatch } from "../helpers/validators";
 
-export const updateOfficer = (async (req: Request, res: Response): Promise<void> => {
+export const updateOfficer = validateRequest(async (req: Request, res: Response): Promise<void> => {
   try {
     const id = req.query.id as string;
 
