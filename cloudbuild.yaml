@@ -20,7 +20,7 @@ steps:
       - '-c'
       - |
         echo "Deploying functions..."
-        functions=("getOfficers" "getOfficer" "createOfficer" "updateOfficer" "deleteOfficer")
+        functions=("getOfficers" "getOfficer" "createOfficer" "updateOfficer" "deleteOfficer" "uploadOfficerPhoto")
         for func in "${functions[@]}"; do
           echo "Deploying function: $func"
           gcloud functions deploy "$func" \
