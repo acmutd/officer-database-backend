@@ -21,6 +21,7 @@
     "dev:createOfficer": "npm run build && functions-framework --target=createOfficer --source=dist --port=8080",
     "dev:updateOfficer": "npm run build && functions-framework --target=updateOfficer --source=dist --port=8080",
     "dev:deleteOfficer": "npm run build && functions-framework --target=deleteOfficer --source=dist --port=8080",
+    "dev:uploadOfficerPhoto": "npm run build && functions-framework --target=uploadOfficerPhoto --source=dist --port=8080",
     "start": "node dist/server.js"
   },
   "dependencies": {
