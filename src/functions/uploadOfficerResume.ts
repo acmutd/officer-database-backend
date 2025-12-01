@@ -92,7 +92,7 @@ export const uploadOfficerResume = validateRequest(async (req: Request, res: Res
         }
 
         if (fileTooLarge) {
-          res.status(400).json({ error: 'File size exceeds 10MB limit' });
+          res.status(400).json({ error: 'File size exceeds 5MB limit' });
           return;
         }
 
@@ -125,15 +125,15 @@ export const uploadOfficerResume = validateRequest(async (req: Request, res: Res
 
         const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
 
-        // Update officer document with photo URL
+        // Update officer document with resume URL
         await db.collection('officer').doc(officerId).set(
-          { photoUrl: publicUrl, photoUpdatedAt: new Date().toISOString() },
+          { resume: publicUrl, resumeUpdatedAt: new Date().toISOString() },
           { merge: true }
         );
 
-        res.status(200).json({ id: officerId, photoUrl: publicUrl });
+        res.status(200).json({ id: officerId, resumeUrl: publicUrl });
       } catch (error) {
-        console.error('uploadOfficerPhoto error during processing', error);
+        console.error('uploadOfficerResume error during processing', error);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
