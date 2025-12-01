@@ -28,12 +28,22 @@ export const uploadOfficerPhoto = validateRequest(async (req: Request, res: Resp
       return;
     }
 
-    const busboy = Busboy({ headers: req.headers });
+    // 10MB file size limit
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+
+    const busboy = Busboy({
+      headers: req.headers,
+      limits: {
+        fileSize: MAX_FILE_SIZE,
+        files: 1 // Only allow 1 file
+      }
+    });
 
     let officerId: string | null = null;
     let fileBuffer: Buffer | null = null;
     let fileContentType: string | null = null;
     let fileName: string | null = null;
+    let fileTooLarge = false;
 
     // Process form fields
     busboy.on('field', (fieldname: string, val: string) => {
@@ -49,12 +59,22 @@ export const uploadOfficerPhoto = validateRequest(async (req: Request, res: Resp
         fileContentType = info.mimeType;
 
         const chunks: Buffer[] = [];
+
+        file.on('limit', () => {
+          fileTooLarge = true;
+          file.resume(); // Drain the file stream
+        });
+
         file.on('data', (chunk: Buffer) => {
-          chunks.push(chunk);
+          if (!fileTooLarge) {
+            chunks.push(chunk);
+          }
         });
 
         file.on('end', () => {
-          fileBuffer = Buffer.concat(chunks);
+          if (!fileTooLarge) {
+            fileBuffer = Buffer.concat(chunks);
+          }
         });
       } else {
         // Ignore other files
@@ -68,6 +88,11 @@ export const uploadOfficerPhoto = validateRequest(async (req: Request, res: Resp
         // Validate required fields
         if (!officerId) {
           res.status(400).json({ error: 'id field is required' });
+          return;
+        }
+
+        if (fileTooLarge) {
+          res.status(400).json({ error: 'File size exceeds 10MB limit' });
           return;
         }
 
