@@ -117,21 +117,26 @@ export const uploadOfficerResume = validateRequest(async (req: Request, res: Res
         await file.save(fileBuffer, {
           contentType: fileContentType || 'application/pdf',
           resumable: false,
-          public: true,
+          public: false,
           metadata: {
-            cacheControl: 'public,max-age=31536000'
+            cacheControl: 'private,max-age=31536000'
           }
         });
 
-        const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
+        // Generate signed URL
+        const [signedUrl] = await file.getSignedUrl({
+          version: 'v4',
+          action: 'read',
+          expires: Date.now() + 3 * 24 * 60 * 60 * 1000, // 3 days
+        });
 
         // Update officer document with resume URL
         await db.collection('officer').doc(officerId).set(
-          { resume: publicUrl, resumeUpdatedAt: new Date().toISOString() },
+          { resume: signedUrl, resumeUpdatedAt: new Date().toISOString() },
           { merge: true }
         );
 
-        res.status(200).json({ id: officerId, resumeUrl: publicUrl });
+        res.status(200).json({ id: officerId, resumeUrl: signedUrl });
       } catch (error) {
         console.error('uploadOfficerResume error during processing', error);
         res.status(500).json({ error: 'Internal Server Error' });
