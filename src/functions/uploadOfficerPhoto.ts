@@ -1,57 +1,126 @@
 import { Request, Response } from "@google-cloud/functions-framework";
 import { db, storage } from "../firebase";
+import Busboy from "busboy";
 import { validateRequest } from "../middleware";
 
-// Expects JSON body: { id: string, imageBase64: string, contentType?: string }
+// Requires multipart/form-data with fields: id (string) and file (image file)
 export const uploadOfficerPhoto = validateRequest(async (req: Request, res: Response): Promise<void> => {
   try {
+    // Set CORS headers
+    res.set('Access-Control-Allow-Origin', '*');
+    res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.set('Access-Control-Allow-Headers', 'Content-Type');
+
+    // Handle preflight request
+    if (req.method === 'OPTIONS') {
+      res.status(204).send('');
+      return;
+    }
+
     if (req.method !== 'POST') {
       res.status(405).json({ error: 'Method Not Allowed' });
       return;
     }
 
-    const { id, imageBase64, contentType } = req.body || {};
-
-    if (!id || !imageBase64) {
-      res.status(400).json({ error: 'id and imageBase64 are required in JSON body' });
+    const contentType = req.headers['content-type'];
+    if (!contentType || !contentType.includes('multipart/form-data')) {
+      res.status(400).json({ error: 'Content-Type must be multipart/form-data' });
       return;
     }
 
-    // Validate officer exists
-    const officerDoc = await db.collection('officer').doc(id).get();
-    if (!officerDoc.exists) {
-      res.status(404).json({ error: 'Officer not found' });
-      return;
-    }
+    const busboy = Busboy({ headers: req.headers });
 
-    let buffer: Buffer;
-    try {
-      buffer = Buffer.from(imageBase64, 'base64');
-    } catch {
-      res.status(400).json({ error: 'Invalid base64 data' });
-      return;
-    }
+    let officerId: string | null = null;
+    let fileBuffer: Buffer | null = null;
+    let fileContentType: string | null = null;
+    let fileName: string | null = null;
 
-    // Try the new Firebase Storage bucket naming convention first
-    const bucketName = 'acm-officer-database.firebasestorage.app';
-    const bucket = storage.bucket(bucketName);
-    const filePath = `officers/${id}`; // extension optional; rely on contentType
-    const file = bucket.file(filePath);
-
-    await file.save(buffer, {
-      contentType: contentType || 'image/jpeg',
-      resumable: false,
-      public: true,
-      metadata: {
-        cacheControl: 'public,max-age=31536000'
+    // Process form fields
+    busboy.on('field', (fieldname: string, val: string) => {
+      if (fieldname === 'id') {
+        officerId = val;
       }
     });
 
-    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
+    // Process the uploaded file
+    busboy.on('file', (fieldname: string, file: NodeJS.ReadableStream, info: { filename: string; encoding: string; mimeType: string }) => {
+      if (fieldname === 'file') {
+        fileName = info.filename;
+        fileContentType = info.mimeType;
 
-    await db.collection('officer').doc(id).set({ photoUrl: publicUrl, photoUpdatedAt: new Date().toISOString() }, { merge: true });
+        const chunks: Buffer[] = [];
+        file.on('data', (chunk: Buffer) => {
+          chunks.push(chunk);
+        });
 
-    res.status(200).json({ id, photoUrl: publicUrl });
+        file.on('end', () => {
+          fileBuffer = Buffer.concat(chunks);
+        });
+      } else {
+        // Ignore other files
+        file.resume();
+      }
+    });
+
+    // Handle completion
+    busboy.on('finish', async () => {
+      try {
+        // Validate required fields
+        if (!officerId) {
+          res.status(400).json({ error: 'id field is required' });
+          return;
+        }
+
+        if (!fileBuffer) {
+          res.status(400).json({ error: 'file upload is required' });
+          return;
+        }
+
+        // Validate officer exists
+        const officerDoc = await db.collection('officer').doc(officerId).get();
+        if (!officerDoc.exists) {
+          res.status(404).json({ error: 'Officer not found' });
+          return;
+        }
+
+        // Upload to Firebase Storage
+        const bucketName = 'acm-officer-database.firebasestorage.app';
+        const bucket = storage.bucket(bucketName);
+        const filePath = `officers/${officerId}`;
+        const file = bucket.file(filePath);
+
+        await file.save(fileBuffer, {
+          contentType: fileContentType || 'image/jpeg',
+          resumable: false,
+          public: true,
+          metadata: {
+            cacheControl: 'public,max-age=31536000'
+          }
+        });
+
+        const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
+
+        // Update officer document with photo URL
+        await db.collection('officer').doc(officerId).set(
+          { photoUrl: publicUrl, photoUpdatedAt: new Date().toISOString() },
+          { merge: true }
+        );
+
+        res.status(200).json({ id: officerId, photoUrl: publicUrl });
+      } catch (error) {
+        console.error('uploadOfficerPhoto error during processing', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    });
+
+    // Handle errors
+    busboy.on('error', (error: Error) => {
+      console.error('Busboy error', error);
+      res.status(400).json({ error: 'Error parsing multipart/form-data' });
+    });
+
+    // Start processing the request
+    busboy.end(req.rawBody);
   } catch (error) {
     console.error('uploadOfficerPhoto error', error);
     res.status(500).json({ error: 'Internal Server Error' });

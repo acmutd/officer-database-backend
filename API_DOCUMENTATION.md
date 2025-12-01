@@ -263,6 +263,73 @@ DELETE /officers?id={officerId}
 
 ---
 
+### Upload Officer Photo
+
+```http
+POST /uploadOfficerPhoto
+```
+
+**Description:** Uploads a photo for an existing officer using multipart/form-data.
+
+**Content-Type:** `multipart/form-data`
+
+**Form Fields:**
+- `id` (required): The officer's unique identifier (text field)
+- `file` (required): The image file to upload (file field)
+
+**Supported File Types:**
+- `image/jpeg`
+- `image/png`
+- `image/gif`
+- `image/webp`
+
+**Example using cURL:**
+```bash
+curl -X POST http://localhost:8080/uploadOfficerPhoto \
+  -F "id=usdf98n9sdf87s897fasd98n" \
+  -F "file=@/path/to/photo.jpg"
+```
+
+**Response:** `200 OK`
+```json
+{
+  "id": "usdf98n9sdf87s897fasd98n",
+  "photoUrl": "https://storage.googleapis.com/acm-officer-database.firebasestorage.app/officers/usdf98n9sdf87s897fasd98n"
+}
+```
+
+**Error Responses:**
+- `400 Bad Request`: Missing required fields or invalid content type
+```json
+{
+  "error": "Content-Type must be multipart/form-data"
+}
+```
+```json
+{
+  "error": "id field is required"
+}
+```
+```json
+{
+  "error": "file upload is required"
+}
+```
+- `404 Not Found`: Officer does not exist
+```json
+{
+  "error": "Officer not found"
+}
+```
+- `405 Method Not Allowed`: Non-POST request
+```json
+{
+  "error": "Method Not Allowed"
+}
+```
+
+---
+
 ## Error Handling
 
 All endpoints may return the following error responses:
