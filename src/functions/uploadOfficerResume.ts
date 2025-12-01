@@ -132,7 +132,7 @@ export const uploadOfficerResume = validateRequest(async (req: Request, res: Res
 
         // Update officer document with resume URL
         await db.collection('officer').doc(officerId).set(
-          { resume: signedUrl, resumeUpdatedAt: new Date().toISOString() },
+          { resumeUpdatedAt: new Date().toISOString() },
           { merge: true }
         );
 
