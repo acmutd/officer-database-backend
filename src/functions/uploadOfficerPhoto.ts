@@ -125,13 +125,18 @@ export const uploadOfficerPhoto = validateRequest(async (req: Request, res: Resp
 
         const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
 
-        // Update officer document with photo URL
+        // Update officer document with photo object
         await db.collection('officer').doc(officerId).set(
-          { photoUrl: publicUrl, photoUpdatedAt: new Date().toISOString() },
+          {
+            photo: {
+              url: publicUrl,
+              lastUpdatedAt: new Date().toISOString()
+            }
+          },
           { merge: true }
         );
 
-        res.status(200).json({ id: officerId, photoUrl: publicUrl });
+        res.status(200).json({ id: officerId, photo: { url: publicUrl, lastUpdatedAt: new Date().toISOString() } });
       } catch (error) {
         console.error('uploadOfficerPhoto error during processing', error);
         res.status(500).json({ error: 'Internal Server Error' });
