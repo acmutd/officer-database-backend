@@ -7,6 +7,7 @@ import { updateOfficer } from './functions/updateOfficer';
 import { deleteOfficer } from './functions/deleteOfficer';
 import { uploadOfficerPhoto } from './functions/uploadOfficerPhoto';
 import { uploadOfficerResume } from './functions/uploadOfficerResume';
+import { getOfficerResume } from './functions/getOfficerResume';
 
 http('createOfficer', createOfficer);
 http('getOfficer', getOfficer);
@@ -15,5 +16,6 @@ http('updateOfficer', updateOfficer);
 http('deleteOfficer', deleteOfficer);
 http('uploadOfficerPhoto', uploadOfficerPhoto);
 http('uploadOfficerResume', uploadOfficerResume);
+http('getOfficerResume', getOfficerResume);
 
-export { createOfficer, getOfficer, getOfficers, updateOfficer, deleteOfficer, uploadOfficerPhoto, uploadOfficerResume };
+export { createOfficer, getOfficer, getOfficers, updateOfficer, deleteOfficer, uploadOfficerPhoto, uploadOfficerResume, getOfficerResume };
