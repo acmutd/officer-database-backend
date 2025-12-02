@@ -55,12 +55,18 @@ export const RoleSchema = z.object({
 	endDate: TermSchema.nullable(),
 });
 
+export const PhotoSchema = z.object({
+	url: z.string().url().optional(),
+	lastUpdatedAt: z.string().optional(),
+});
+
 export const OfficerSchema = z.object({
 	id: z.string().min(1),
 	firstName: z.string().min(1),
 	lastName: z.string().min(1),
 	netId: z.string().min(1),
-	resume: z.string().optional(),
+	photo: PhotoSchema,
+	resumeUpdatedAt: z.string().optional(),
 	socialLinks: SocialLinksSchema,
 	creditStanding: StandingSchema,
 	yearStanding: StandingSchema,
