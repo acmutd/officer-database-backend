@@ -4,7 +4,7 @@ This page will explain the intricacies of my wonderful creation, the ACM Officer
 ### Get All Officers
 
 ```http
-GET /officers
+GET /getOfficers
 ```
 
 **Description:** Retrieves all officers from the database.
@@ -17,7 +17,10 @@ GET /officers
     "firstName": "Bobby",
     "lastName": "Balls",
     "netId": "DAL676767",
-    "resume": null,
+    "photo": {
+      "url": "https://storage.googleapis.com/acm-officer-database.firebasestorage.app/officers/usdf98n9sdf87s897fasd98n",
+      "lastUpdatedAt": "2025-12-01T10:30:00.000Z"
+    },
     "socialLinks": {
       "linkedin": "https://linkedin.com/in/bobbyballs",
       "github": "https://github.com/bobbyballs",
@@ -58,7 +61,7 @@ GET /officers
 ### Get Single Officer
 
 ```http
-GET /officers?id={officerId}
+GET /getOfficer?id={officerId}
 ```
 
 **Description:** Retrieves a specific officer by their ID.
@@ -72,6 +75,10 @@ GET /officers?id={officerId}
   "id": "usdf98n9sdf87s897fasd98n",
   "firstName": "Bobby",
   "lastName": "Balls",
+  "photo": {
+    "url": "https://storage.googleapis.com/acm-officer-database.firebasestorage.app/officers/usdf98n9sdf87s897fasd98n",
+    "lastUpdatedAt": "2025-12-01T10:30:00.000Z"
+  },
   ...
 }
 ```
@@ -263,30 +270,223 @@ DELETE /officers?id={officerId}
 
 ---
 
-## Error Handling
+### Upload Officer Photo
 
-All endpoints may return the following error responses:
+```http
+POST /uploadOfficerPhoto
+```
 
-**`400 Bad Request`** - Validation error or invalid request
+**Description:** Uploads a photo for an existing officer using multipart/form-data.
+
+**Content-Type:** `multipart/form-data`
+
+**Form Fields:**
+- `id` (required): The officer's unique identifier (text field)
+- `file` (required): The image file to upload (file field)
+
+**Supported File Types:**
+- `image/jpeg`
+- `image/png`
+- `image/gif`
+- `image/webp`
+
+**Example using cURL:**
+```bash
+curl -X POST http://localhost:8080/uploadOfficerPhoto \
+  -F "id=usdf98n9sdf87s897fasd98n" \
+  -F "file=@/path/to/photo.jpg"
+```
+
+**Response:** `200 OK`
 ```json
 {
-  "error": "Validation failed",
-  "details": { ... }
+  "id": "usdf98n9sdf87s897fasd98n",
+  "photo": {
+    "url": "https://storage.googleapis.com/acm-officer-database.firebasestorage.app/officers/usdf98n9sdf87s897fasd98n",
+    "lastUpdatedAt": "2025-12-01T10:30:00.000Z"
+  }
 }
 ```
 
-**`404 Not Found`** - Resource not found
+**Stored in Database:**
+- Photos are stored in Firestore under `photo` object with `url` and `lastUpdatedAt` fields
+- The photo URL is permanent and public
+
+**Error Responses:**
+- `400 Bad Request`: Missing required fields or invalid content type
+```json
+{
+  "error": "Content-Type must be multipart/form-data"
+}
+```
+```json
+{
+  "error": "id field is required"
+}
+```
+```json
+{
+  "error": "file upload is required"
+}
+```
+```json
+{
+  "error": "File size exceeds 10MB limit"
+}
+```
+- `404 Not Found`: Officer does not exist
 ```json
 {
   "error": "Officer not found"
 }
 ```
-
-**`500 Internal Server Error`** - Server error
+- `405 Method Not Allowed`: Non-POST request
 ```json
 {
-  "error": "Failed to [operation] officer"
+  "error": "Method Not Allowed"
 }
 ```
 
-##
+---
+
+## Error Handling
+
+### Upload Officer Resume
+
+```http
+POST /uploadOfficerResume
+```
+
+**Description:** Uploads a PDF resume for an existing officer using multipart/form-data.
+
+**Content-Type:** `multipart/form-data`
+
+**Form Fields:**
+- `id` (required): The officer's unique identifier (text field)
+- `file` (required): The resume file to upload (file field)
+
+**Supported File Types:**
+- `application/pdf`
+
+**Max File Size:** 5MB
+
+**Example using cURL:**
+```bash
+curl -X POST http://localhost:8080/uploadOfficerResume \
+  -F "id=usdf98n9sdf87s897fasd98n" \
+  -F "file=@/path/to/resume.pdf;type=application/pdf"
+```
+
+**Response:** `200 OK`
+```json
+{
+  "id": "usdf98n9sdf87s897fasd98n",
+  "resumeUrl": "https://storage.googleapis.com/acm-officer-database.firebasestorage.app/resumes/usdf98n9sdf87s897fasd98n?X-Goog-Algorithm=GOOG4-RSA-SHA256&..."
+}
+```
+
+**Important:**
+- Resumes are NOT stored in the Firestore database
+- A fresh signed URL is generated on-demand with each upload
+- Signed URLs are valid for 3 days
+- Resumes are stored privately in Firebase Storage (not publicly accessible)
+
+**Error Responses:**
+- `400 Bad Request`: Missing required fields, invalid content type, or file too large
+```json
+{
+  "error": "Content-Type must be multipart/form-data"
+}
+```
+```json
+{
+  "error": "id field is required"
+}
+```
+```json
+{
+  "error": "file upload is required"
+}
+```
+```json
+{
+  "error": "File size exceeds 5MB limit"
+}
+```
+- `404 Not Found`: Officer does not exist
+```json
+{
+  "error": "Officer not found"
+}
+```
+- `405 Method Not Allowed`: Non-POST request
+```json
+{
+  "error": "Method Not Allowed"
+}
+```
+
+---
+
+### Get Officer Resume (Signed URL)
+
+```http
+GET /getOfficerResume?id={officerId}
+```
+
+**Description:** Generates and returns a fresh signed URL for an officer's resume. This endpoint should be called whenever you need access to a resume file.
+
+**Query Parameters:**
+- `id` (required): The officer's unique identifier
+
+**Response:** `200 OK`
+```json
+{
+  "id": "usdf98n9sdf87s897fasd98n",
+  "resumeUrl": "https://storage.googleapis.com/acm-officer-database.firebasestorage.app/resumes/usdf98n9sdf87s897fasd98n?X-Goog-Algorithm=GOOG4-RSA-SHA256&..."
+}
+```
+
+**Important:**
+- Returns a fresh signed URL valid for 3 days
+- Call this endpoint each time you need to access the resume
+- Signed URLs are single-use and time-limited for security
+- If no resume is stored for the officer, returns 404
+
+**Error Responses:**
+- `400 Bad Request`: Missing officer ID
+```json
+{
+  "error": "Officer ID is required"
+}
+```
+- `404 Not Found`: Resume not found for officer
+```json
+{
+  "error": "Resume not found for this officer"
+}
+```
+- `500 Internal Server Error`: Server error
+```json
+{
+  "error": "Server error"
+}
+```
+
+---
+
+## Summary of Storage Approach
+
+### Photos
+- **Stored in:** Firebase Storage + Firestore database
+- **Access:** Public permanent URLs
+- **Stored in DB:** Yes, as nested object with `photo.url` and `photo.lastUpdatedAt`
+- **Expiration:** Never expires
+
+### Resumes
+- **Stored in:** Firebase Storage only (private)
+- **Access:** Signed URLs (3-day expiration)
+- **Stored in DB:** No
+- **How to access:** Call `/getOfficerResume` endpoint to get a fresh signed URL
+
+---

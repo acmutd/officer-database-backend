@@ -18,9 +18,11 @@ export const getOfficer = validateRequest(async (req: Request, res: Response): P
       return;
     }
 
+    const officerData = officerDoc.data();
+
     res.status(200).json({
       id: officerDoc.id,
-      ...officerDoc.data()
+      ...officerData
     });
   } catch (error) {
     res.status(500).json({
