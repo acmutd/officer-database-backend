@@ -4,8 +4,8 @@ import { validateRequest } from "../middleware";
 
 export const getOfficers = validateRequest(async (req: Request, res: Response): Promise<void> => {
   try {
-    // Get limit parameter (default 25, max 100)
-    const pageSize = Math.min(Math.max(parseInt(req.query.limit as string) || 25, 1), 100);
+    // Get limit parameter (default 50, max 100)
+    const pageSize = Math.min(Math.max(parseInt(req.query.limit as string) || 50, 1), 100);
 
     const snapshot = await db.collection("officer").limit(pageSize).get();
 
