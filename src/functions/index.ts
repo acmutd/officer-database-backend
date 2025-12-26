@@ -6,3 +6,6 @@ export { deleteOfficer } from './deleteOfficer';
 export { uploadOfficerPhoto } from './uploadOfficerPhoto';
 export { uploadOfficerResume } from './uploadOfficerResume';
 export { getOfficerResume } from './getOfficerResume';
+export { archiveOfficer } from './archiveOfficer';
+export { unarchiveOfficer } from './unarchiveOfficer';
+export { getArchivedOfficers } from './getArchivedOfficers';

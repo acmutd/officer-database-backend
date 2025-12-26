@@ -7,7 +7,7 @@ This page will explain the intricacies of my wonderful creation, the ACM Officer
 GET /getOfficers
 ```
 
-**Description:** Retrieves all officers from the database.
+**Description:** Retrieves all current officers from the `officer` collection.
 
 **Response:** `200 OK`
 ```json
@@ -488,5 +488,81 @@ GET /getOfficerResume?id={officerId}
 - **Access:** Signed URLs (3-day expiration)
 - **Stored in DB:** No
 - **How to access:** Call `/getOfficerResume` endpoint to get a fresh signed URL
+
+---
+
+### Archive Officer
+
+```http
+POST /archiveOfficer?id={officerId}
+```
+
+**Description:** Moves an officer document from `officer` to `archived` collection. Does not delete data.
+
+**Query Parameters:**
+- `id` (required): The officer's unique identifier
+
+**Response:** `200 OK`
+```json
+{
+  "id": "usdf98n9sdf87s897fasd98n",
+  "archived": true,
+  "firstName": "Bobby",
+  "lastName": "Balls"
+}
+```
+
+**Error Responses:**
+- `400 Bad Request`: Missing officer ID
+- `404 Not Found`: Officer not found in active collection
+- `409 Conflict`: Officer already archived
+
+---
+
+### Unarchive Officer
+
+```http
+POST /unarchiveOfficer?id={officerId}
+```
+
+**Description:** Moves an officer document from `archived` back to `officer` collection.
+
+**Query Parameters:**
+- `id` (required): The officer's unique identifier
+
+**Response:** `200 OK`
+```json
+{
+  "id": "usdf98n9sdf87s897fasd98n",
+  "archived": false
+}
+```
+
+**Error Responses:**
+- `400 Bad Request`: Missing officer ID
+- `404 Not Found`: Officer not found in archived collection
+- `409 Conflict`: Officer already active
+
+---
+
+### Get Archived Officers
+
+```http
+GET /getArchivedOfficers
+```
+
+**Description:** Retrieves all archived (past) officers from the `archived` collection.
+
+**Response:** `200 OK`
+```json
+[
+  {
+    "id": "usdf98n9sdf87s897fasd98n",
+    "firstName": "Bobby",
+    "lastName": "Balls",
+    "...": "..."
+  }
+]
+```
 
 ---

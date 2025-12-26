@@ -8,6 +8,9 @@ import { deleteOfficer } from './functions/deleteOfficer';
 import { uploadOfficerPhoto } from './functions/uploadOfficerPhoto';
 import { uploadOfficerResume } from './functions/uploadOfficerResume';
 import { getOfficerResume } from './functions/getOfficerResume';
+import { archiveOfficer } from './functions/archiveOfficer';
+import { unarchiveOfficer } from './functions/unarchiveOfficer';
+import { getArchivedOfficers } from './functions/getArchivedOfficers';
 
 http('createOfficer', createOfficer);
 http('getOfficer', getOfficer);
@@ -17,5 +20,8 @@ http('deleteOfficer', deleteOfficer);
 http('uploadOfficerPhoto', uploadOfficerPhoto);
 http('uploadOfficerResume', uploadOfficerResume);
 http('getOfficerResume', getOfficerResume);
+http('archiveOfficer', archiveOfficer);
+http('unarchiveOfficer', unarchiveOfficer);
+http('getArchivedOfficers', getArchivedOfficers);
 
-export { createOfficer, getOfficer, getOfficers, updateOfficer, deleteOfficer, uploadOfficerPhoto, uploadOfficerResume, getOfficerResume };
+export { createOfficer, getOfficer, getOfficers, updateOfficer, deleteOfficer, uploadOfficerPhoto, uploadOfficerResume, getOfficerResume, archiveOfficer, unarchiveOfficer, getArchivedOfficers };
