@@ -15,7 +15,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "dev": "npm run build && node dist/local.js"
+    "dev": "npm run build && node dist/tests/deploy.js"
   },
   "dependencies": {
     "@google-cloud/functions-framework": "^4.0.0",
