@@ -12,7 +12,7 @@
   },
   "license": "ISC",
   "type": "commonjs",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "build": "tsc",
     "dev": "npm run build && node dist/tests/deploy.js"
