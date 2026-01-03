@@ -12,7 +12,8 @@ export const updateOfficer = validateRequest(async (req: Request, res: Response)
       return;
     }
 
-    const officerRef = db.collection("officer").doc(id);
+    const collection = req.query.archived === 'true' ? 'archived' : 'officer';
+    const officerRef = db.collection(collection).doc(id);
     const officerDoc = await officerRef.get();
 
     if (!officerDoc.exists) {
