@@ -25,7 +25,8 @@ export const unarchiveOfficer = validateRequest(async (req: Request, res: Respon
         throw Object.assign(new Error("Officer already active"), { status: 409 });
       }
 
-      tx.set(activeRef, archivedDoc.data());
+      const officerData = archivedDoc.data();
+      tx.set(activeRef, { ...officerData, isActive: true });
       tx.delete(archivedRef);
     });
 
