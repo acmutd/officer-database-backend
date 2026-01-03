@@ -40,38 +40,25 @@ This is the backend repository for the ACM Officer Database
 
 5. **Start the development server**
 
-> [!NOTE]
-> The Functions Framework runs **one function at a time**. Use `npm run dev` to see an interactive menu, or use specific dev scripts.
-
-> [!TIP]
-> You may want to disable the auth and CORS checkers by removing it from the function you want to run, this way you can open it in your browser and not get blocked
-
-**Quick start (interactive menu):**
-
 ```bash
 npm run dev
 ```
 
-This will show a menu where you can select which function to run.
+This starts a local Express server on `http://localhost:8080` that runs all endpoints simultaneously. No need to select or run individual functions—just start the server and call any endpoint.
 
-**Or run a specific function directly:**
+**Available endpoints:**
+- `GET /getOfficers` - Retrieve all officers
+- `GET /getOfficer?id={id}` - Get a single officer by ID
+- `POST /createOfficer` - Create a new officer
+- `PATCH /updateOfficer?id={id}` - Update an officer
+- `DELETE /deleteOfficer?id={id}` - Delete an officer
+- `POST /archiveOfficer?id={id}` - Archive an officer (sets `isActive` to false)
+- `POST /unarchiveOfficer?id={id}` - Unarchive an officer (sets `isActive` to true)
+- `POST /uploadOfficerPhoto` - Upload officer photo (multipart/form-data)
+- `POST /uploadOfficerResume` - Upload officer resume (multipart/form-data)
+- `GET /getOfficerResume?id={id}` - Get signed URL for officer resume
 
-```bash
-npm run dev:getOfficers    # GET all officers
-npm run dev:getOfficer     # GET single officer by ID (query param ?id=...)
-npm run dev:createOfficer  # POST create new officer
-npm run dev:updateOfficer  # PATCH update officer (query param ?id=...)
-npm run dev:deleteOfficer  # DELETE officer (query param ?id=...)
-```
-
-All functions run at `http://localhost:8080`
-
-**Example workflow:**
-1. Run `npm run dev` and select "createOfficer" from menu
-2. Send POST request to `http://localhost:8080` with officer data
-3. Stop server (Ctrl+C)
-4. Run `npm run dev` and select "getOfficers" from menu
-5. Visit `http://localhost:8080` to see all officers
+**Note:** Auth is disabled locally for convenience. All requests will succeed if the server is running.
 
 ### Project Structure
 
