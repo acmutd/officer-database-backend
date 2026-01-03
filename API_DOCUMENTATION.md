@@ -503,7 +503,7 @@ GET /getOfficerResume?id={officerId}
 POST /archiveOfficer?id={officerId}
 ```
 
-**Description:** Moves an officer document from `officer` to `archived` collection. Does not delete data.
+**Description:** Moves an officer document from `officer` to `archived` collection and sets `isActive` to `false`. Does not delete data.
 
 **Query Parameters:**
 - `id` (required): The officer's unique identifier
@@ -512,11 +512,16 @@ POST /archiveOfficer?id={officerId}
 ```json
 {
   "id": "usdf98n9sdf87s897fasd98n",
-  "archived": true,
   "firstName": "Bobby",
-  "lastName": "Balls"
+  "lastName": "Balls",
+  "isActive": false,
+  "...": "..."
 }
 ```
+
+**Important:**
+- The `isActive` field is automatically set to `false` when archiving
+- The officer is moved to the `archived` collection
 
 **Error Responses:**
 - `400 Bad Request`: Missing officer ID
@@ -525,6 +530,35 @@ POST /archiveOfficer?id={officerId}
 
 ---
 
+### Unarchive Officer
+
+```http
+POST /unarchiveOfficer?id={officerId}
+```
+
+**Description:** Moves an officer document from `archived` to `officer` collection and sets `isActive` to `true`. Does not delete data.
+
+**Query Parameters:**
+- `id` (required): The officer's unique identifier
+
+**Response:** `200 OK`
+```json
+{
+  "id": "usdf98n9sdf87s897fasd98n",
+  "firstName": "Bobby",
+  "lastName": "Balls",
+  "isActive": true,
+  "...": "..."
+}
+```
+
+**Important:**
+- The `isActive` field is automatically set to `true` when unarchiving
+- The officer is moved back to the `officer` collection
+
+**Error Responses:**
+- `400 Bad Request`: Missing officer ID
+- `404 Not Found`: Archived officer not found
 - `409 Conflict`: Officer already active
 
 ---
@@ -544,6 +578,7 @@ GET /getArchivedOfficers
     "id": "usdf98n9sdf87s897fasd98n",
     "firstName": "Bobby",
     "lastName": "Balls",
+    "isActive": false,
     "...": "..."
   }
 ]
