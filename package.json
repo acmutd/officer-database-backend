@@ -12,21 +12,10 @@
   },
   "license": "ISC",
   "type": "commonjs",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "build": "tsc",
-    "dev": "npm run build && functions-framework --target=getOfficers --source=dist --port=8080",
-    "dev:getOfficers": "npm run build && functions-framework --target=getOfficers --source=dist --port=8080",
-    "dev:getOfficer": "npm run build && functions-framework --target=getOfficer --source=dist --port=8080",
-    "dev:createOfficer": "npm run build && functions-framework --target=createOfficer --source=dist --port=8080",
-    "dev:updateOfficer": "npm run build && functions-framework --target=updateOfficer --source=dist --port=8080",
-    "dev:deleteOfficer": "npm run build && functions-framework --target=deleteOfficer --source=dist --port=8080",
-    "dev:uploadOfficerPhoto": "npm run build && functions-framework --target=uploadOfficerPhoto --source=dist --port=8080",
-    "dev:uploadOfficerResume": "npm run build && functions-framework --target=uploadOfficerResume --source=dist --port=8080",
-    "dev:getOfficerResume": "npm run build && functions-framework --target=getOfficerResume --source=dist --port=8080",
-    "dev:archiveOfficer": "npm run build && functions-framework --target=archiveOfficer --source=dist --port=8080",
-    "dev:unarchiveOfficer": "npm run build && functions-framework --target=unarchiveOfficer --source=dist --port=8080",
-    "start": "node dist/server.js"
+    "dev": "npm run build && node dist/tests/deploy.js"
   },
   "dependencies": {
     "@google-cloud/functions-framework": "^4.0.0",
