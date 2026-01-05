@@ -26,7 +26,7 @@ export const archiveOfficer = validateRequest(async (req: Request, res: Response
       }
 
       const officerData = activeDoc.data();
-      tx.set(archivedRef, officerData);
+      tx.set(archivedRef, { ...officerData, isArchived: true });
       tx.delete(activeRef);
     });
 
