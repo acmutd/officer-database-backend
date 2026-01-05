@@ -40,38 +40,23 @@ This is the backend repository for the ACM Officer Database
 
 5. **Start the development server**
 
-> [!NOTE]
-> The Functions Framework runs **one function at a time**. Use `npm run dev` to see an interactive menu, or use specific dev scripts.
-
-> [!TIP]
-> You may want to disable the auth and CORS checkers by removing it from the function you want to run, this way you can open it in your browser and not get blocked
-
-**Quick start (interactive menu):**
-
 ```bash
 npm run dev
 ```
 
-This will show a menu where you can select which function to run.
+This starts a local Express server on `http://localhost:8080` that runs all endpoints simultaneously. No need to select or run individual functions—just start the server and call any endpoint.
 
-**Or run a specific function directly:**
-
-```bash
-npm run dev:getOfficers    # GET all officers
-npm run dev:getOfficer     # GET single officer by ID (query param ?id=...)
-npm run dev:createOfficer  # POST create new officer
-npm run dev:updateOfficer  # PATCH update officer (query param ?id=...)
-npm run dev:deleteOfficer  # DELETE officer (query param ?id=...)
-```
-
-All functions run at `http://localhost:8080`
-
-**Example workflow:**
-1. Run `npm run dev` and select "createOfficer" from menu
-2. Send POST request to `http://localhost:8080` with officer data
-3. Stop server (Ctrl+C)
-4. Run `npm run dev` and select "getOfficers" from menu
-5. Visit `http://localhost:8080` to see all officers
+**Available endpoints:**
+- `GET /getOfficers` - Retrieve all officers
+- `GET /getOfficer?id={id}` - Get a single officer by ID
+- `POST /createOfficer` - Create a new officer
+- `PATCH /updateOfficer?id={id}` - Update an officer
+- `DELETE /deleteOfficer?id={id}` - Delete an officer
+- `POST /archiveOfficer?id={id}` - Archive an officer (sets `isActive` to false)
+- `POST /unarchiveOfficer?id={id}` - Unarchive an officer (sets `isActive` to true)
+- `POST /uploadOfficerPhoto` - Upload officer photo (multipart/form-data)
+- `POST /uploadOfficerResume` - Upload officer resume (multipart/form-data)
+- `GET /getOfficerResume?id={id}` - Get signed URL for officer resume
 
 ### Project Structure
 
@@ -79,11 +64,17 @@ All functions run at `http://localhost:8080`
 officer-database-backend/
 ├── src/
 │   ├── functions/          # Cloud Functions (CRUD operations)
+│   │   ├── archiveOfficer.ts
 │   │   ├── createOfficer.ts
-│   │   ├── getOfficers.ts
+│   │   ├── deleteOfficer.ts
 │   │   ├── getOfficer.ts
+│   │   ├── getOfficerResume.ts
+│   │   ├── getOfficers.ts
+│   │   ├── index.ts
+│   │   ├── unarchiveOfficer.ts
 │   │   ├── updateOfficer.ts
-│   │   └── deleteOfficer.ts
+│   │   ├── uploadOfficerPhoto.ts
+│   │   └── uploadOfficerResume.ts
 │   ├── helpers/            # Validation utilities
 │   │   └── validators.ts
 │   ├── types/              # TypeScript types and Zod schemas
@@ -92,27 +83,28 @@ officer-database-backend/
 │   ├── firebase.ts         # Firebase Admin SDK initialization
 │   └── index.ts            # Function exports
 ├── tests/                  # Test scripts
-│   ├── api-test.js
-│   └── validator-test.js
+│   └── deploy.ts
 ├── dist/                   # Compiled JavaScript (generated)
 ├── firebase-creds.json     # Firebase credentials (not in git)
+├── cloudbuild.yaml
 ├── package.json
 ├── tsconfig.json
+├── API_DOCUMENTATION.md
 └── README.md
 ```
 
 ### Environment Notes
 
-- **Local:** Uses Functions Framework to simulate Cloud Functions. Each function runs independently at `http://localhost:8080` (use `npm run dev:FUNCTION_NAME` to run a specific function)
-- **Production:** Each function is deployed separately with its own URL. All functions are accessible via their individual Cloud Functions endpoints.
-- **Database:** Firestore collection `officer`
+- **Local:** Uses an Express server to run all functions simultaneously on a single port (8080 by default). Start the server with `npm run dev` to access all endpoints.
+- **Production:** Serverless Cloud Functions deployed on Google Cloud Platform (GCP). Each function has its own endpoint URL.
+- **Database:** Firestore database on Firebase with two collections: `officer` (current officers) and `archived` (archived officers)
 
 ### Local vs Production
 
-| Environment | Routing | URL Structure |
-|-------------|---------|---------------|
-| **Local** | One function at a time on port 8080 | `http://localhost:8080` (function determined by `--target` flag) |
-| **Production** | Each function has its own endpoint | `https://REGION-PROJECT.cloudfunctions.net/FUNCTION_NAME` |
+| Environment | Server | URL Structure |
+|-------------|--------|---------------|
+| **Local** | Express server running all functions | `http://localhost:8080/ENDPOINT_NAME` |
+| **Production** | Serverless Cloud Functions on GCP | `https://REGION-PROJECT.cloudfunctions.net/FUNCTION_NAME` |
 
 ### Troubleshooting
 

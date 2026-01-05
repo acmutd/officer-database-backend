@@ -4,7 +4,8 @@ import { validateRequest } from "../middleware";
 
 export const getOfficers = validateRequest(async (req: Request, res: Response): Promise<void> => {
   try {
-    const snapshot = await db.collection("officer").get();
+    const collection = req.query.archived === 'true' ? 'archived' : 'officer';
+    const snapshot = await db.collection(collection).get();
 
     const officers = snapshot.docs.map(doc => doc.data());
 

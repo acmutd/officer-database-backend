@@ -7,7 +7,10 @@ This page will explain the intricacies of my wonderful creation, the ACM Officer
 GET /getOfficers
 ```
 
-**Description:** Retrieves all officers from the database.
+**Description:** Retrieves officers from the database. Use `?archived=true` to get archived (past) officers instead.
+
+**Query Parameters:**
+- `archived` (optional): Set to `true` to retrieve from the `archived` collection instead of `officer`
 
 **Response:** `200 OK`
 ```json
@@ -64,10 +67,11 @@ GET /getOfficers
 GET /getOfficer?id={officerId}
 ```
 
-**Description:** Retrieves a specific officer by their ID.
+**Description:** Retrieves a specific officer by their ID. Use `?archived=true` to look in the archived collection.
 
 **Query Parameters:**
 - `id` (required): The officer's unique identifier
+- `archived` (optional): Set to `true` to search in the `archived` collection
 
 **Response:** `200 OK`
 ```json
@@ -96,7 +100,7 @@ GET /getOfficer?id={officerId}
 ### Create Officer
 
 ```http
-POST /officers
+POST /createOfficer
 ```
 
 **Description:** Creates a new officer in the database.
@@ -197,13 +201,14 @@ POST /officers
 ### Update Officer
 
 ```http
-PATCH /officers?id={officerId}
+PATCH /updateOfficer?id={officerId}
 ```
 
-**Description:** Updates specific fields of an existing officer. Only include the fields you want to update.
+**Description:** Updates specific fields of an existing officer. Only include the fields you want to update. Use `?archived=true` to update an archived officer.
 
 **Query Parameters:**
 - `id` (required): The officer's unique identifier
+- `archived` (optional): Set to `true` to update in the `archived` collection
 
 **Request Body:** (partial update - include only fields to change)
 ```json
@@ -247,13 +252,14 @@ PATCH /officers?id={officerId}
 ### Delete Officer
 
 ```http
-DELETE /officers?id={officerId}
+DELETE /deleteOfficer?id={officerId}
 ```
 
-**Description:** Deletes an officer from the database.
+**Description:** Deletes an officer from the database. Use `?archived=true` to delete from the archived collection.
 
 **Query Parameters:**
 - `id` (required): The officer's unique identifier
+- `archived` (optional): Set to `true` to delete from the `archived` collection
 
 **Response:** `200 OK`
 ```json
@@ -488,5 +494,71 @@ GET /getOfficerResume?id={officerId}
 - **Access:** Signed URLs (3-day expiration)
 - **Stored in DB:** No
 - **How to access:** Call `/getOfficerResume` endpoint to get a fresh signed URL
+
+---
+
+### Archive Officer
+
+```http
+POST /archiveOfficer?id={officerId}
+```
+
+**Description:** Moves an officer document from `officer` to `archived` collection. Does not delete data or modify the `isActive` status.
+
+**Query Parameters:**
+- `id` (required): The officer's unique identifier
+
+**Response:** `200 OK`
+```json
+{
+  "id": "usdf98n9sdf87s897fasd98n",
+  "firstName": "Bobby",
+  "lastName": "Balls",
+  "isActive": true,
+  "...": "..."
+}
+```
+
+**Important:**
+- The officer is moved to the `archived` collection
+- The `isActive` status remains unchanged during archiving
+
+**Error Responses:**
+- `400 Bad Request`: Missing officer ID
+- `404 Not Found`: Officer not found in active collection
+- `409 Conflict`: Officer already archived
+
+---
+
+### Unarchive Officer
+
+```http
+POST /unarchiveOfficer?id={officerId}
+```
+
+**Description:** Moves an officer document from `archived` to `officer` collection. Does not delete data or modify the `isActive` status.
+
+**Query Parameters:**
+- `id` (required): The officer's unique identifier
+
+**Response:** `200 OK`
+```json
+{
+  "id": "usdf98n9sdf87s897fasd98n",
+  "firstName": "Bobby",
+  "lastName": "Balls",
+  "isActive": true,
+  "...": "..."
+}
+```
+
+**Important:**
+- The officer is moved back to the `officer` collection
+- The `isActive` status remains unchanged during unarchiving
+
+**Error Responses:**
+- `400 Bad Request`: Missing officer ID
+- `404 Not Found`: Archived officer not found
+- `409 Conflict`: Officer already active
 
 ---

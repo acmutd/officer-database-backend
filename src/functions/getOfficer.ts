@@ -11,7 +11,8 @@ export const getOfficer = validateRequest(async (req: Request, res: Response): P
       return;
     }
 
-    const officerDoc = await db.collection("officer").doc(id).get();
+    const collection = req.query.archived === 'true' ? 'archived' : 'officer';
+    const officerDoc = await db.collection(collection).doc(id).get();
 
     if (!officerDoc.exists) {
       res.status(404).json({ error: "Officer not found" });
