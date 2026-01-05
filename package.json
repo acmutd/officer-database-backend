@@ -18,7 +18,7 @@
     "dev": "npm run build && node dist/tests/deploy.js"
   },
   "dependencies": {
-    "@google-cloud/functions-framework": "^4.0.0",
+    "@google-cloud/functions-framework": "^4.0.1",
     "@google-cloud/storage": "^7.17.3",
     "busboy": "^1.6.0",
     "express": "^5.2.1",
