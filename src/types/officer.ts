@@ -77,6 +77,7 @@ export const OfficerSchema = z.object({
 	roles: z.array(RoleSchema),
 	accessLevel: z.number().int().min(1).max(3),
 	isActive: z.boolean(),
+	isArchived: z.boolean(),
 });
 
 export type Officer = z.infer<typeof OfficerSchema>;
