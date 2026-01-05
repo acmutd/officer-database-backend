@@ -87,7 +87,6 @@ officer-database-backend/
 ├── dist/                   # Compiled JavaScript (generated)
 ├── firebase-creds.json     # Firebase credentials (not in git)
 ├── cloudbuild.yaml
-├── deploy.sh
 ├── package.json
 ├── tsconfig.json
 ├── API_DOCUMENTATION.md

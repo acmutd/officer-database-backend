@@ -100,7 +100,7 @@ GET /getOfficer?id={officerId}
 ### Create Officer
 
 ```http
-POST /officers
+POST /createOfficer
 ```
 
 **Description:** Creates a new officer in the database.
@@ -201,7 +201,7 @@ POST /officers
 ### Update Officer
 
 ```http
-PATCH /officers?id={officerId}
+PATCH /updateOfficer?id={officerId}
 ```
 
 **Description:** Updates specific fields of an existing officer. Only include the fields you want to update. Use `?archived=true` to update an archived officer.
@@ -252,7 +252,7 @@ PATCH /officers?id={officerId}
 ### Delete Officer
 
 ```http
-DELETE /officers?id={officerId}
+DELETE /deleteOfficer?id={officerId}
 ```
 
 **Description:** Deletes an officer from the database. Use `?archived=true` to delete from the archived collection.
@@ -503,40 +503,7 @@ GET /getOfficerResume?id={officerId}
 POST /archiveOfficer?id={officerId}
 ```
 
-**Description:** Moves an officer document from `officer` to `archived` collection and sets `isActive` to `false`. Does not delete data.
-
-**Query Parameters:**
-- `id` (required): The officer's unique identifier
-
-**Response:** `200 OK`
-```json
-{
-  "id": "usdf98n9sdf87s897fasd98n",
-  "firstName": "Bobby",
-  "lastName": "Balls",
-  "isActive": false,
-  "...": "..."
-}
-```
-
-**Important:**
-- The `isActive` field is automatically set to `false` when archiving
-- The officer is moved to the `archived` collection
-
-**Error Responses:**
-- `400 Bad Request`: Missing officer ID
-- `404 Not Found`: Officer not found in active collection
-- `409 Conflict`: Officer already archived
-
----
-
-### Unarchive Officer
-
-```http
-POST /unarchiveOfficer?id={officerId}
-```
-
-**Description:** Moves an officer document from `archived` to `officer` collection and sets `isActive` to `true`. Does not delete data.
+**Description:** Moves an officer document from `officer` to `archived` collection. Does not delete data or modify the `isActive` status.
 
 **Query Parameters:**
 - `id` (required): The officer's unique identifier
@@ -553,8 +520,41 @@ POST /unarchiveOfficer?id={officerId}
 ```
 
 **Important:**
-- The `isActive` field is automatically set to `true` when unarchiving
+- The officer is moved to the `archived` collection
+- The `isActive` status remains unchanged during archiving
+
+**Error Responses:**
+- `400 Bad Request`: Missing officer ID
+- `404 Not Found`: Officer not found in active collection
+- `409 Conflict`: Officer already archived
+
+---
+
+### Unarchive Officer
+
+```http
+POST /unarchiveOfficer?id={officerId}
+```
+
+**Description:** Moves an officer document from `archived` to `officer` collection. Does not delete data or modify the `isActive` status.
+
+**Query Parameters:**
+- `id` (required): The officer's unique identifier
+
+**Response:** `200 OK`
+```json
+{
+  "id": "usdf98n9sdf87s897fasd98n",
+  "firstName": "Bobby",
+  "lastName": "Balls",
+  "isActive": true,
+  "...": "..."
+}
+```
+
+**Important:**
 - The officer is moved back to the `officer` collection
+- The `isActive` status remains unchanged during unarchiving
 
 **Error Responses:**
 - `400 Bad Request`: Missing officer ID
