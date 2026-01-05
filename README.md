@@ -58,19 +58,23 @@ This starts a local Express server on `http://localhost:8080` that runs all endp
 - `POST /uploadOfficerResume` - Upload officer resume (multipart/form-data)
 - `GET /getOfficerResume?id={id}` - Get signed URL for officer resume
 
-**Note:** Auth is disabled locally for convenience. All requests will succeed if the server is running.
-
 ### Project Structure
 
 ```
 officer-database-backend/
 ├── src/
 │   ├── functions/          # Cloud Functions (CRUD operations)
+│   │   ├── archiveOfficer.ts
 │   │   ├── createOfficer.ts
-│   │   ├── getOfficers.ts
+│   │   ├── deleteOfficer.ts
 │   │   ├── getOfficer.ts
+│   │   ├── getOfficerResume.ts
+│   │   ├── getOfficers.ts
+│   │   ├── index.ts
+│   │   ├── unarchiveOfficer.ts
 │   │   ├── updateOfficer.ts
-│   │   └── deleteOfficer.ts
+│   │   ├── uploadOfficerPhoto.ts
+│   │   └── uploadOfficerResume.ts
 │   ├── helpers/            # Validation utilities
 │   │   └── validators.ts
 │   ├── types/              # TypeScript types and Zod schemas
@@ -79,27 +83,29 @@ officer-database-backend/
 │   ├── firebase.ts         # Firebase Admin SDK initialization
 │   └── index.ts            # Function exports
 ├── tests/                  # Test scripts
-│   ├── api-test.js
-│   └── validator-test.js
+│   └── deploy.ts
 ├── dist/                   # Compiled JavaScript (generated)
 ├── firebase-creds.json     # Firebase credentials (not in git)
+├── cloudbuild.yaml
+├── deploy.sh
 ├── package.json
 ├── tsconfig.json
+├── API_DOCUMENTATION.md
 └── README.md
 ```
 
 ### Environment Notes
 
-- **Local:** Uses Functions Framework to simulate Cloud Functions. Each function runs independently at `http://localhost:8080` (use `npm run dev:FUNCTION_NAME` to run a specific function)
-- **Production:** Each function is deployed separately with its own URL. All functions are accessible via their individual Cloud Functions endpoints.
-- **Database:** Firestore collection `officer`
+- **Local:** Uses an Express server to run all functions simultaneously on a single port (8080 by default). Start the server with `npm run dev` to access all endpoints.
+- **Production:** Serverless Cloud Functions deployed on Google Cloud Platform (GCP). Each function has its own endpoint URL.
+- **Database:** Firestore database on Firebase with two collections: `officer` (current officers) and `archived` (archived officers)
 
 ### Local vs Production
 
-| Environment | Routing | URL Structure |
-|-------------|---------|---------------|
-| **Local** | One function at a time on port 8080 | `http://localhost:8080` (function determined by `--target` flag) |
-| **Production** | Each function has its own endpoint | `https://REGION-PROJECT.cloudfunctions.net/FUNCTION_NAME` |
+| Environment | Server | URL Structure |
+|-------------|--------|---------------|
+| **Local** | Express server running all functions | `http://localhost:8080/ENDPOINT_NAME` |
+| **Production** | Serverless Cloud Functions on GCP | `https://REGION-PROJECT.cloudfunctions.net/FUNCTION_NAME` |
 
 ### Troubleshooting
 
