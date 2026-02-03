@@ -10,7 +10,8 @@ import {
   uploadOfficerPhoto,
   uploadOfficerResume,
   archiveOfficer,
-  unarchiveOfficer
+  unarchiveOfficer,
+  getPublicOfficers
 } from '../src/functions';
 
 const app = express();
@@ -28,7 +29,8 @@ const handlers: Record<string, express.RequestHandler> = {
   uploadOfficerPhoto,
   uploadOfficerResume,
   archiveOfficer,
-  unarchiveOfficer
+  unarchiveOfficer,
+  getPublicOfficers
 };
 
 Object.entries(handlers).forEach(([name, handler]) => {
