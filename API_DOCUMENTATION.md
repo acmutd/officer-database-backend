@@ -61,6 +61,53 @@ GET /getOfficers
 
 ---
 
+### Get Public Officers
+
+```http
+GET /getPublicOfficers
+```
+
+**Description:** Retrieves active officers grouped by division for public display. Only active roles (where `endDate` is `null`) are returned.
+
+**Response:** `200 OK`
+```json
+{
+  "Development": [
+    {
+      "firstName": "Bobby",
+      "lastName": "Balls",
+      "photo": "https://storage.googleapis.com/acm-officer-database.firebasestorage.app/officers/usdf98n9sdf87s897fasd98n",
+      "socialLinks": {
+        "linkedin": "https://linkedin.com/in/bobbyballs",
+        "github": null,
+        "personalEmail": null
+      },
+      "title": "Development Officer"
+    }
+  ],
+  "Executive": [
+    {
+      "firstName": "Alice",
+      "lastName": "Smith",
+      "photo": null,
+      "socialLinks": {
+        "linkedin": null,
+        "github": "https://github.com/alicesmith",
+        "personalEmail": "alice@example.com"
+      },
+      "title": "President"
+    }
+  ]
+}
+```
+
+**Notes:**
+- `photo` is a direct URL string or `null` when no photo is available
+- `socialLinks` fields (`linkedin`, `github`, `personalEmail`) are `null` when missing
+- Officers are sorted by role `level` (descending), then `firstName`, then `lastName`
+
+---
+
 ### Get Single Officer
 
 ```http

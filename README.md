@@ -49,6 +49,7 @@ This starts a local Express server on `http://localhost:8080` that runs all endp
 **Available endpoints:**
 - `GET /getOfficers` - Retrieve all officers
 - `GET /getOfficer?id={id}` - Get a single officer by ID
+- `GET /getPublicOfficers` - Get public officers grouped by division
 - `POST /createOfficer` - Create a new officer
 - `PATCH /updateOfficer?id={id}` - Update an officer
 - `DELETE /deleteOfficer?id={id}` - Delete an officer
@@ -70,6 +71,7 @@ officer-database-backend/
 │   │   ├── getOfficer.ts
 │   │   ├── getOfficerResume.ts
 │   │   ├── getOfficers.ts
+│   │   ├── getPublicOfficers.ts
 │   │   ├── index.ts
 │   │   ├── unarchiveOfficer.ts
 │   │   ├── updateOfficer.ts
