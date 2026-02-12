@@ -19,6 +19,7 @@ export const DivisionEnum = z.enum([
 	"Community",
 	"HackUTD",
 	"Industry",
+	"Finance",
 ]);
 
 export const SocialLinksSchema = z.object({
