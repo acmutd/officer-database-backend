@@ -27,6 +27,7 @@ GET /getOfficers
     "socialLinks": {
       "linkedin": "https://linkedin.com/in/bobbyballs",
       "github": "https://github.com/bobbyballs",
+      "instagram": "https://instagram.com/bobbyballs",
       "personalEmail": "bobbyballs@gmail.com"
     },
     "creditStanding": "Freshman",
@@ -116,6 +117,7 @@ POST /createOfficer
   "socialLinks": {
     "linkedin": "https://linkedin.com/in/bobbyballs",
     "github": "https://github.com/bobbyballs",
+    "instagram": "https://instagram.com/bobbyballs",
     "personalEmail": "bobbyballs@gmail.com"
   },
   "creditStanding": "Freshman",
@@ -167,7 +169,7 @@ POST /createOfficer
 - `creditStanding` / `yearStanding`: `"Freshman"` | `"Sophomore"` | `"Junior"` | `"Senior"` | `"Graduate"` | `"Alumni"`
 - `term`: `"Fall"` | `"Spring"` | `"Summer"`
 - `year`: Integer >= 2020
-- `division`: `"Media"` | `"Research"` | `"Development"` | `"Projects"` | `"Education"` | `"Executive"` | `"Community"` | `"HackUTD"` | `"Industry"`
+- `division`: `"Media"` | `"Research"` | `"Development"` | `"Projects"` | `"Education"` | `"Executive"` | `"Community"` | `"HackUTD"` | `"Industry"` | `"Finance"`
 - `level`: Integer 1-3 (1 = Officer, 2 = Director, 3 = Executive)
 - `accessLevel`: Integer 1-3
 - `socialLinks`: All fields optional but must be valid URLs/emails if provided
