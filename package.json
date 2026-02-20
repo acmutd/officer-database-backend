@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@google-cloud/functions-framework": "^4.0.0",
-    "@google-cloud/storage": "^7.17.3",
+    "@google-cloud/storage": "^7.19.0",
     "busboy": "^1.6.0",
     "express": "^5.2.1",
     "firebase-admin": "^13.6.0",
