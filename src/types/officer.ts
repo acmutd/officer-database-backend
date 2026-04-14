@@ -78,6 +78,7 @@ export const OfficerSchema = z.object({
 	joinDate: TermSchema,
 	roles: z.array(RoleSchema),
 	accessLevel: z.number().int().min(1).max(3),
+	displayOnWebsite: z.boolean(),
 	isActive: z.boolean(),
 	isArchived: z.boolean(),
 });
